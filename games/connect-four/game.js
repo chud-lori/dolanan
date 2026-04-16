@@ -5,6 +5,7 @@
 
 import { register, t } from "/shared/i18n.js";
 import { wireGameHead } from "/shared/game-head.js";
+import { fx } from "/shared/fx.js";
 
 register("c4", {
   en: {
@@ -25,7 +26,29 @@ register("c4", {
   },
 });
 
-wireGameHead({ titleEn: "Connect Four", titleId: "Connect Four", subtitleKey: "c4.subtitle" });
+wireGameHead({
+  titleEn: "Connect Four",
+  titleId: "Connect Four",
+  subtitleKey: "c4.subtitle",
+  rules: {
+    en: `
+      <h3>Goal</h3>
+      <p>Line up four of your discs in a row — horizontal, vertical, or diagonal.</p>
+      <h3>Play</h3>
+      <ul>
+        <li>Red goes first. Tap a column to drop your disc; it slides to the lowest empty slot.</li>
+        <li>If the board fills with no four-in-a-row, it's a draw.</li>
+      </ul>`,
+    id: `
+      <h3>Tujuan</h3>
+      <p>Sejajarkan empat bidakmu — horizontal, vertikal, atau diagonal.</p>
+      <h3>Cara main</h3>
+      <ul>
+        <li>Merah duluan. Tap kolom buat jatuhin bidak — otomatis ke slot paling bawah.</li>
+        <li>Kalau papan penuh tanpa empat sebaris, seri.</li>
+      </ul>`,
+  },
+});
 
 const ROWS = 6;
 const COLS = 7;
@@ -93,6 +116,7 @@ function drop(col) {
   if (r < 0) return;
   grid[r][col] = current;
   placeDisc(r, col, current, { animate: true });
+  fx.play("place"); fx.haptic("tap");
 
   const win = checkWin(r, col, current);
   if (win) {
@@ -103,6 +127,7 @@ function drop(col) {
     for (const [rr, cc] of win) {
       slots[rr][cc].querySelector(".c4-disc")?.classList.add("win");
     }
+    fx.play("win"); fx.haptic("win");
     syncSlotsDisabled();
     renderStatusBar();
     return;

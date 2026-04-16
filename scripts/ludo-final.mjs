@@ -1,0 +1,10 @@
+import { chromium } from "playwright";
+const b = await chromium.launch();
+const ctx = await b.newContext({ viewport: { width: 600, height: 1000 }, deviceScaleFactor: 2 });
+const p = await ctx.newPage();
+await p.goto("http://localhost:8765/games/ludo/", { waitUntil: "networkidle" });
+await p.screenshot({ path: "/tmp/ludo-setup.png" });
+await p.click('button[data-n="4"]');
+await p.waitForTimeout(800);
+await p.screenshot({ path: "/tmp/ludo-play.png" });
+await b.close();

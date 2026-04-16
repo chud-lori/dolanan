@@ -23,6 +23,53 @@
   font-size: 12px;
 }
 
+/* Small utility buttons that sit in the game header next to the lang seg. */
+.fx-mute, .howto-btn {
+  padding: 0;
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  min-height: 36px;
+  border-radius: 50%;
+  font-size: 15px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--card-2);
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+
+.howto-btn { font-weight: 800; }
+
+.game-head-tools {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* How-to modal styling */
+.howto-card { max-width: 480px; text-align: left; }
+.howto-body {
+  max-height: 60vh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 4px 4px 8px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+.howto-body h3 {
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-muted);
+  margin: 12px 0 4px;
+}
+.howto-body ul { padding-left: 20px; margin: 4px 0; }
+.howto-body li { margin: 2px 0; }
+.howto-body p { margin: 4px 0; }
+
 /* Tight mobile: shrink header + back link to buy vertical space. */
 @media (max-width: 480px) {
   body.game { padding-bottom: 12px; }
@@ -61,6 +108,9 @@
   font-size: 14px;
   box-shadow: var(--shadow-sm);
 }
+
+/* `display: inline-flex` above otherwise overrides the HTML hidden attr. */
+.turn-pill[hidden] { display: none !important; }
 
 .turn-dot {
   width: 12px;

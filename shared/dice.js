@@ -28,18 +28,35 @@ export function renderFace(el, face) {
 }
 
 /**
- * Animate a roll, then settle on `final`. Returns a promise.
+ * Animate a dice roll: the cube tumbles + bounces, faces flicker through
+ * random values, then it settles on `final` with a small landing bounce.
+ * Returns a promise that resolves with `final` once the animation ends.
+ *
+ * Requires `.die-rolling` and `.die-settle` keyframes in CSS (defined in
+ * the consuming page's stylesheet — ludo/game.css ships them).
  */
-export function animateRoll(el, final, duration = 500) {
+export function animateRoll(el, final, duration = 800) {
   return new Promise((resolve) => {
+    el.classList.remove("die-settle");
+    el.classList.add("die-rolling");
+
     const start = performance.now();
+    let lastFlicker = 0;
+
     function tick(now) {
-      const elapsed = now - start;
-      renderFace(el, 1 + Math.floor(Math.random() * 6));
-      if (elapsed < duration) {
+      // Flicker faces every ~70ms so the eye sees a tumbling die.
+      if (now - lastFlicker > 70) {
+        renderFace(el, 1 + Math.floor(Math.random() * 6));
+        lastFlicker = now;
+      }
+      if (now - start < duration) {
         requestAnimationFrame(tick);
       } else {
+        el.classList.remove("die-rolling");
         renderFace(el, final);
+        // Landing bounce
+        el.classList.add("die-settle");
+        setTimeout(() => el.classList.remove("die-settle"), 280);
         resolve(final);
       }
     }

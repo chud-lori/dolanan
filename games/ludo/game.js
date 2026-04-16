@@ -17,6 +17,7 @@
 import { animateRoll, renderFace } from "/shared/dice.js";
 import { register, t } from "/shared/i18n.js";
 import { wireGameHead } from "/shared/game-head.js";
+import { fx } from "/shared/fx.js";
 
 register("lu", {
   en: {
@@ -47,7 +48,55 @@ register("lu", {
   },
 });
 
-wireGameHead({ titleEn: "Ludo", titleId: "Ludo", subtitleKey: "lu.subtitle" });
+wireGameHead({
+  titleEn: "Ludo",
+  titleId: "Ludo",
+  subtitleKey: "lu.subtitle",
+  rules: {
+    en: `
+      <h3>Goal</h3>
+      <p>Be the first to bring all four of your tokens around the board and into the center.</p>
+      <h3>Movement</h3>
+      <ul>
+        <li>Roll a <strong>6</strong> to release a token from your home base.</li>
+        <li>Tokens travel clockwise around the 52-cell track, then turn into your colored home column toward the center.</li>
+        <li>Exact roll required to land on the finish.</li>
+      </ul>
+      <h3>Capture & safety</h3>
+      <ul>
+        <li>Land on an opponent's token to send it back to their home base.</li>
+        <li><strong>Safe squares</strong> (entry squares + star squares) cannot be captured on.</li>
+        <li>Two of your own tokens can't share a cell.</li>
+      </ul>
+      <h3>Bonus rolls</h3>
+      <ul>
+        <li>Rolling a 6 → roll again.</li>
+        <li>Capturing → roll again.</li>
+        <li>Three 6s in a row → turn forfeited.</li>
+      </ul>`,
+    id: `
+      <h3>Tujuan</h3>
+      <p>Bawa keempat bidakmu keliling papan ke tengah duluan.</p>
+      <h3>Gerakan</h3>
+      <ul>
+        <li>Kocok <strong>6</strong> untuk keluarkan bidak dari home base.</li>
+        <li>Bidak jalan searah jarum jam di 52 kotak track, lalu masuk ke jalur warna sendiri menuju tengah.</li>
+        <li>Wajib kocok angka pas buat sampai finish.</li>
+      </ul>
+      <h3>Makan & aman</h3>
+      <ul>
+        <li>Mendarat di kotak bidak lawan = lawan balik ke home base.</li>
+        <li><strong>Kotak aman</strong> (entry + bintang) tidak bisa dimakan.</li>
+        <li>Dua bidak warna sama tidak bisa di kotak yang sama.</li>
+      </ul>
+      <h3>Bonus kocok</h3>
+      <ul>
+        <li>Dapat 6 → kocok lagi.</li>
+        <li>Makan lawan → kocok lagi.</li>
+        <li>Tiga kali 6 berturut → giliran hangus.</li>
+      </ul>`,
+  },
+});
 
 // ---- Constants -------------------------------------------------------------
 
@@ -133,6 +182,7 @@ function newGame(n) {
   setupEl.hidden = true;
   playEl.hidden = false;
   statusEl.hidden = true;
+  document.getElementById("turn-pill").hidden = false;
   hintEl.textContent = t("lu.hintTap");
   render();
 }
@@ -230,12 +280,16 @@ function moveToken(color, tokenIdx, roll) {
     }
   }
 
+  if (captured) { fx.play("capture"); fx.haptic("capture"); }
+  else { fx.play("place"); fx.haptic("tap"); }
+
   // Win check
   if (tokens.every((tp) => tp === TRACK_LEN + HOME_LEN)) {
     state.done = true;
     statusEl.textContent = t("lu.win", { p: t(COLOR_KEY[color]) });
     statusEl.className = "status-banner win";
     statusEl.hidden = false;
+    fx.play("win"); fx.haptic("win");
   }
   return { captured, newPos };
 }
@@ -253,6 +307,7 @@ async function doRoll() {
   rollBtn.disabled = true;
   state.rolledThisTurn = true;
   const face = 1 + Math.floor(Math.random() * 6);
+  fx.play("roll"); fx.haptic("roll");
   await animateRoll(dieEl, face, 500);
   state.roll = face;
   if (face === 6) state.sixesInRow++;
@@ -363,6 +418,16 @@ function render() {
     }
   }
 
+  // Active-base highlight overlays — a glowing frame around the home base
+  // of whoever's turn it is. One overlay per color, positioned via CSS grid.
+  for (const color of ["R", "B", "G", "Y"]) {
+    const overlay = document.createElement("div");
+    overlay.className = "lu-base-overlay";
+    overlay.dataset.color = color;
+    if (!state.done && color === currentColor()) overlay.classList.add("active");
+    boardEl.appendChild(overlay);
+  }
+
   // Status pill
   turnLabel.textContent = state.done
     ? "—"
@@ -383,7 +448,9 @@ function cellForPos(color, tokenIdx, pos) {
 
 function buildCellClassMap() {
   const map = {};
-  // Bases
+  // Bases — every cell in the 6×6 corner is solid color. The 4 token-rest
+  // positions get an extra `lu-base-spot` modifier that draws a white
+  // circle so tokens have a clear seat to sit on.
   const baseRanges = [
     { color: "R", r0: 0, c0: 0 },
     { color: "B", r0: 0, c0: 9 },
@@ -393,16 +460,11 @@ function buildCellClassMap() {
   for (const { color, r0, c0 } of baseRanges) {
     for (let r = r0; r < r0 + 6; r++) {
       for (let c = c0; c < c0 + 6; c++) {
-        // Inner white area for token rest spots (2x2 rings around each spot)
-        const isInnerShell =
-          (r === r0 + 1 || r === r0 + 4 || c === c0 + 1 || c === c0 + 4) &&
-          r >= r0 + 1 && r <= r0 + 4 && c >= c0 + 1 && c <= c0 + 4;
-        if (r >= r0 + 1 && r <= r0 + 4 && c >= c0 + 1 && c <= c0 + 4) {
-          map[`${r},${c}`] = "lu-base-inner";
-        } else {
-          map[`${r},${c}`] = `lu-base ${color}`;
-        }
+        map[`${r},${c}`] = `lu-base ${color}`;
       }
+    }
+    for (const [r, c] of BASE_CELLS[color]) {
+      map[`${r},${c}`] += " lu-base-spot";
     }
   }
   // Track
@@ -446,6 +508,7 @@ document.getElementById("reset").addEventListener("click", () => {
   setupEl.hidden = false;
   playEl.hidden = true;
   statusEl.hidden = true;
+  document.getElementById("turn-pill").hidden = true;
 });
 
 document.addEventListener("langchange", () => {

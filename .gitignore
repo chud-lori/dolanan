@@ -22,3 +22,4 @@ Thumbs.db
 # Python bytecode from the icon generator
 __pycache__/
 *.pyc
+/dist/

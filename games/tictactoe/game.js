@@ -4,6 +4,7 @@ import { storage } from "/shared/storage.js";
 import { renderGrid, createGrid } from "/shared/board.js";
 import { register, t } from "/shared/i18n.js";
 import { wireGameHead } from "/shared/game-head.js";
+import { fx } from "/shared/fx.js";
 
 register("ttt", {
   en: {
@@ -22,7 +23,32 @@ register("ttt", {
   },
 });
 
-wireGameHead({ titleEn: "Tic-Tac-Toe", titleId: "Tik-Tak-Toe", subtitleKey: "ttt.subtitle" });
+wireGameHead({
+  titleEn: "Tic-Tac-Toe",
+  titleId: "Tik-Tak-Toe",
+  subtitleKey: "ttt.subtitle",
+  rules: {
+    en: `
+      <h3>Goal</h3>
+      <p>Be first to line up three of your marks in a row — horizontally,
+      vertically, or diagonally.</p>
+      <h3>Play</h3>
+      <ul>
+        <li>X goes first. Take turns tapping any empty square.</li>
+        <li>The board fills with no three-in-a-row — it's a draw.</li>
+        <li>Series score is kept automatically across rounds.</li>
+      </ul>`,
+    id: `
+      <h3>Tujuan</h3>
+      <p>Sejajarkan tiga tandamu duluan — horizontal, vertikal, atau diagonal.</p>
+      <h3>Cara main</h3>
+      <ul>
+        <li>X main duluan. Gantian tap kotak kosong.</li>
+        <li>Kalau papan penuh tanpa tiga sebaris — seri.</li>
+        <li>Skor ronde disimpan otomatis.</li>
+      </ul>`,
+  },
+});
 
 const WIN_LINES = [
   [0, 1, 2], [3, 4, 5], [6, 7, 8],
@@ -77,6 +103,7 @@ function checkWinner() {
 function handleClick(r, c) {
   if (done || grid[r][c]) return;
   grid[r][c] = current;
+  fx.play("place"); fx.haptic("tap");
   const result = checkWinner();
   if (result) {
     done = true;
@@ -88,6 +115,7 @@ function handleClick(r, c) {
         const rr = Math.floor(i / 3), cc = i % 3;
         cells[rr][cc].classList.add("win");
       }
+      fx.play("win"); fx.haptic("win");
     } else {
       series.d++;
       statusEl.textContent = t("ttt.draw");

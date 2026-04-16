@@ -6,6 +6,7 @@
 
 import { register, t } from "/shared/i18n.js";
 import { wireGameHead } from "/shared/game-head.js";
+import { fx } from "/shared/fx.js";
 
 register("bs", {
   en: {
@@ -64,7 +65,43 @@ register("bs", {
   },
 });
 
-wireGameHead({ titleEn: "Battleship", titleId: "Kapal Perang", subtitleKey: "bs.subtitle" });
+wireGameHead({
+  titleEn: "Battleship",
+  titleId: "Kapal Perang",
+  subtitleKey: "bs.subtitle",
+  rules: {
+    en: `
+      <h3>Goal</h3>
+      <p>Sink your opponent's entire fleet before they sink yours.</p>
+      <h3>Setup phase</h3>
+      <ul>
+        <li>Each player privately places 5 ships on a 10×10 board: Carrier (5), Battleship (4), Cruiser (3), Submarine (3), Destroyer (2).</li>
+        <li>Tap a cell to drop the ship; use <em>Rotate</em> to flip horizontal/vertical.</li>
+        <li>Pass the device — your opponent does the same.</li>
+      </ul>
+      <h3>Attack phase</h3>
+      <ul>
+        <li>On your turn, tap a cell on the enemy grid. Hit, miss, or sink — the result is shown.</li>
+        <li>Pass the device between turns so neither player sees the other's board.</li>
+        <li>First to sink all 5 enemy ships wins.</li>
+      </ul>`,
+    id: `
+      <h3>Tujuan</h3>
+      <p>Tenggelamkan seluruh armada lawan duluan.</p>
+      <h3>Fase pasang</h3>
+      <ul>
+        <li>Tiap pemain pasang 5 kapal di papan 10×10: Kapal Induk (5), Kapal Perang (4), Penjelajah (3), Kapal Selam (3), Perusak (2).</li>
+        <li>Tap kotak buat taruh kapal; <em>Putar</em> untuk ubah arah.</li>
+        <li>Oper HP — lawan giliran pasang.</li>
+      </ul>
+      <h3>Fase serang</h3>
+      <ul>
+        <li>Tap kotak di papan lawan. Kena, meleset, atau tenggelam — hasilnya muncul.</li>
+        <li>Oper HP tiap giliran biar tidak ada yang lihat papan lawan.</li>
+        <li>Yang menenggelamkan semua kapal duluan menang.</li>
+      </ul>`,
+  },
+});
 
 const N = 10;
 const FLEET = [
@@ -328,6 +365,7 @@ function renderAttack() {
     if (ship === null) {
       attacker.hits[r][c] = "M";
       state.attackResultMessage = t("bs.miss");
+      fx.play("place"); fx.haptic("tap");
     } else {
       attacker.hits[r][c] = "H";
       const s = defender.ships[ship];
@@ -336,8 +374,10 @@ function renderAttack() {
         s.sunk = true;
         for (const [rr, cc] of s.cells) attacker.hits[rr][cc] = "S";
         state.attackResultMessage = t("bs.sunkShip", { name: shipName(s.key) });
+        fx.play("capture"); fx.haptic("capture");
       } else {
         state.attackResultMessage = t("bs.hit");
+        fx.play("capture"); fx.haptic("capture");
       }
     }
 
@@ -345,6 +385,7 @@ function renderAttack() {
     if (defender.ships.every((s) => s.sunk)) {
       state.winner = state.whose;
       state.phase = "done";
+      fx.play("win"); fx.haptic("win");
       render();
       return;
     }

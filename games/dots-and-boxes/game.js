@@ -3,6 +3,7 @@
 
 import { register, t } from "/shared/i18n.js";
 import { wireGameHead } from "/shared/game-head.js";
+import { fx } from "/shared/fx.js";
 
 register("db", {
   en: {
@@ -21,7 +22,33 @@ register("db", {
   },
 });
 
-wireGameHead({ titleEn: "Dots & Boxes", titleId: "Titik & Kotak", subtitleKey: "db.subtitle" });
+wireGameHead({
+  titleEn: "Dots & Boxes",
+  titleId: "Titik & Kotak",
+  subtitleKey: "db.subtitle",
+  rules: {
+    en: `
+      <h3>Goal</h3>
+      <p>Own more boxes than your opponent when every edge is drawn.</p>
+      <h3>Play</h3>
+      <ul>
+        <li>Take turns drawing one edge between two adjacent dots.</li>
+        <li>Completing the 4th side of a box claims it for you and gives a <strong>bonus turn</strong> — keep drawing.</li>
+        <li>Game ends when all edges are drawn. Most boxes wins.</li>
+        <li>Use the size button (4×4 → 7×7) to adjust the board between rounds.</li>
+      </ul>`,
+    id: `
+      <h3>Tujuan</h3>
+      <p>Kuasai lebih banyak kotak dari lawan saat semua garis sudah ditarik.</p>
+      <h3>Cara main</h3>
+      <ul>
+        <li>Gantian tarik satu garis antara dua titik bersebelahan.</li>
+        <li>Menutup sisi ke-4 sebuah kotak = kotak jadi milikmu + <strong>giliran bonus</strong> — terus tarik.</li>
+        <li>Game selesai saat semua garis sudah ditarik. Kotak terbanyak menang.</li>
+        <li>Tombol ukuran (4×4 → 7×7) untuk ganti papan antar ronde.</li>
+      </ul>`,
+  },
+});
 
 const boardEl = document.getElementById("board");
 const statusEl = document.getElementById("status");

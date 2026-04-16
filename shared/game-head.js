@@ -1,25 +1,40 @@
-// Shared: set titles, wire a segmented language toggle into every game page,
-// and keep the UI in sync with the current language.
+// Shared: set titles, inject language toggle + sound-mute + how-to buttons,
+// engage screen wake lock. Games call `wireGameHead({...})` at the top of
+// their entry point and get all of this for free.
 
 import { t, getLang, setLang, applyI18n } from "./i18n.js";
+import { mountMuteButton } from "./fx.js";
+import { mountHowToButton, setRules } from "./how-to.js";
+import { engage as engageWakeLock } from "./wake-lock.js";
 
 /**
  * @param {object} opts
- * @param {string} opts.titleEn - Game title in English
- * @param {string} opts.titleId - Game title in Indonesian
- * @param {string} [opts.subtitleKey] - i18n key for subtitle (with scope)
+ * @param {string} opts.titleEn
+ * @param {string} opts.titleId
+ * @param {string} [opts.subtitleKey]
+ * @param {{en: string, id: string}} [opts.rules]  — how-to content
  */
-export function wireGameHead({ titleEn, titleId, subtitleKey } = {}) {
+export function wireGameHead({ titleEn, titleId, subtitleKey, rules } = {}) {
   document.body.classList.add("game");
+  engageWakeLock();
 
   const backLink = document.querySelector(".back-link");
   const titleEl = document.querySelector(".game-title");
   const subtitleEl = document.querySelector(".game-subtitle");
   const header = document.querySelector(".game-header");
 
-  // Inject segmented language toggle if missing.
+  // Collect the language seg + fx-mute + how-to into a single cluster so
+  // they wrap sensibly on narrow phones.
+  let tools = document.querySelector(".game-head-tools");
+  if (!tools && header) {
+    tools = document.createElement("div");
+    tools.className = "game-head-tools";
+    header.appendChild(tools);
+  }
+
+  // Segmented language toggle
   let seg = document.getElementById("lang-seg");
-  if (!seg && header) {
+  if (!seg && tools) {
     seg = document.createElement("div");
     seg.id = "lang-seg";
     seg.className = "lang-seg";
@@ -27,12 +42,18 @@ export function wireGameHead({ titleEn, titleId, subtitleKey } = {}) {
     seg.setAttribute("aria-label", "Language");
     seg.innerHTML = `
       <button type="button" data-lang="en">EN</button>
-      <button type="button" data-lang="id">ID</button>
-    `;
-    header.appendChild(seg);
+      <button type="button" data-lang="id">ID</button>`;
+    tools.appendChild(seg);
     seg.querySelectorAll("button").forEach((btn) => {
       btn.addEventListener("click", () => setLang(btn.dataset.lang));
     });
+  }
+
+  // Mute + how-to buttons
+  mountMuteButton(tools);
+  if (rules) {
+    setRules(rules);
+    mountHowToButton(tools);
   }
 
   function refresh() {

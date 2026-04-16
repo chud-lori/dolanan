@@ -16,6 +16,7 @@
 import { storage } from "/shared/storage.js";
 import { register, t } from "/shared/i18n.js";
 import { wireGameHead } from "/shared/game-head.js";
+import { fx } from "/shared/fx.js";
 
 register("ch", {
   en: {
@@ -44,7 +45,37 @@ register("ch", {
   },
 });
 
-wireGameHead({ titleEn: "Chess", titleId: "Catur", subtitleKey: "ch.subtitle" });
+wireGameHead({
+  titleEn: "Chess",
+  titleId: "Catur",
+  subtitleKey: "ch.subtitle",
+  rules: {
+    en: `
+      <h3>Goal</h3>
+      <p>Checkmate the opponent's king — attack it so it can't escape, block, or be defended.</p>
+      <h3>Special rules</h3>
+      <ul>
+        <li><strong>Castling</strong> — king moves two squares toward an unmoved rook; the rook hops over.</li>
+        <li><strong>En passant</strong> — capture a pawn that just double-stepped past your pawn.</li>
+        <li><strong>Promotion</strong> — a pawn reaching the last rank becomes a Queen, Rook, Bishop, or Knight (you pick).</li>
+        <li><strong>Draws</strong>: stalemate, threefold repetition, or 50 moves without a capture/pawn move.</li>
+      </ul>
+      <h3>This app</h3>
+      <p>Hotseat only — no AI. Tap a piece to see its legal moves; tap a target to play it. Undo backs out the last move.</p>`,
+    id: `
+      <h3>Tujuan</h3>
+      <p>Skakmat raja lawan — serang sampai tak ada jalan kabur, blok, atau pertahanan.</p>
+      <h3>Aturan spesial</h3>
+      <ul>
+        <li><strong>Rokade</strong> — raja loncat dua kotak menuju benteng yang belum bergerak; benteng melompat ke sisi lain.</li>
+        <li><strong>En passant</strong> — makan pion yang baru saja loncat dua kotak melewatimu.</li>
+        <li><strong>Promosi</strong> — pion sampai baris ujung jadi Mentri, Benteng, Gajah, atau Kuda (pilih sendiri).</li>
+        <li><strong>Seri</strong>: pat, posisi sama tiga kali, atau 50 langkah tanpa makan/gerak pion.</li>
+      </ul>
+      <h3>Versi ini</h3>
+      <p>Hotseat saja — tanpa AI. Tap bidak untuk lihat langkah legal; tap target untuk jalan. Tombol Batalkan urungkan langkah terakhir.</p>`,
+  },
+});
 
 // Use the filled (solid) glyphs for both sides so pieces are readable.
 // Color + text-shadow separates white from black.
@@ -541,9 +572,12 @@ function performMove(move) {
     return;
   }
   applyMove(state, move);
+  if (move.captured) { fx.play("capture"); fx.haptic("capture"); }
+  else { fx.play("place"); fx.haptic("tap"); }
   selected = null;
   selectedMoves = [];
   render();
+  if (state.result) { fx.play(state.result.startsWith("½") ? "lose" : "win"); fx.haptic("win"); }
 }
 
 function askPromotion(move, promos) {

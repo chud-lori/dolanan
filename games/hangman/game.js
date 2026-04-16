@@ -5,6 +5,7 @@
 import { storage } from "/shared/storage.js";
 import { register, t, getLang } from "/shared/i18n.js";
 import { wireGameHead } from "/shared/game-head.js";
+import { fx } from "/shared/fx.js";
 import { WORDS } from "./words.js";
 
 register("hm", {
@@ -44,7 +45,33 @@ register("hm", {
   },
 });
 
-wireGameHead({ titleEn: "Hangman", titleId: "Tebak Kata", subtitleKey: "hm.subtitle" });
+wireGameHead({
+  titleEn: "Hangman",
+  titleId: "Tebak Kata",
+  subtitleKey: "hm.subtitle",
+  rules: {
+    en: `
+      <h3>Goal</h3>
+      <p>Guess the hidden word one letter at a time. Six wrong guesses and the figure is complete — game over.</p>
+      <h3>Play</h3>
+      <ul>
+        <li>Tap the input zone, then type letters on your device keyboard.</li>
+        <li>Correct letters fill in; wrong letters add a body part to the gallows.</li>
+        <li>Cycle categories (Animals, Food, Tech, Nature) with the <em>Change</em> button.</li>
+        <li>Switch language to swap word lists (English ↔ Indonesian).</li>
+      </ul>`,
+    id: `
+      <h3>Tujuan</h3>
+      <p>Tebak kata tersembunyi satu huruf per giliran. Salah enam kali = tamat.</p>
+      <h3>Cara main</h3>
+      <ul>
+        <li>Tap area input, lalu ketik huruf pakai keyboard HP.</li>
+        <li>Huruf benar terisi; huruf salah menambah bagian tubuh ke tiang.</li>
+        <li>Tukar kategori (Hewan, Makanan, Teknologi, Alam) lewat tombol <em>Ganti</em>.</li>
+        <li>Ganti bahasa untuk ganti daftar kata (Indonesia ↔ Inggris).</li>
+      </ul>`,
+  },
+});
 
 const wordEl = document.getElementById("word");
 const triedEl = document.getElementById("tried");
@@ -147,8 +174,14 @@ function render() {
 function guess(letter) {
   if (isOver() || guessed.has(letter)) return;
   guessed.add(letter);
-  if (!target.includes(letter)) wrong++;
+  const hit = target.includes(letter);
+  if (!hit) wrong++;
+  fx.play(hit ? "click" : "lose"); fx.haptic(hit ? "click" : "tap");
   render();
+  if (isOver()) {
+    if (isWin()) { fx.play("win"); fx.haptic("win"); }
+    else { fx.play("lose"); fx.haptic("lose"); }
+  }
 }
 
 function isWin() {

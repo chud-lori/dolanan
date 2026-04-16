@@ -4,6 +4,7 @@
 
 import { register, t } from "/shared/i18n.js";
 import { wireGameHead } from "/shared/game-head.js";
+import { fx } from "/shared/fx.js";
 
 register("ck", {
   en: {
@@ -22,7 +23,37 @@ register("ck", {
   },
 });
 
-wireGameHead({ titleEn: "Checkers", titleId: "Dam", subtitleKey: "ck.subtitle" });
+wireGameHead({
+  titleEn: "Checkers",
+  titleId: "Dam",
+  subtitleKey: "ck.subtitle",
+  rules: {
+    en: `
+      <h3>Goal</h3>
+      <p>Capture all opponent pieces, or leave them with no legal moves.</p>
+      <h3>Movement</h3>
+      <ul>
+        <li>Pieces move diagonally forward to an empty dark square.</li>
+        <li>Capture by jumping over an adjacent opponent into the empty square beyond.</li>
+        <li>Captures are <strong>mandatory</strong> — if you can jump, you must.</li>
+        <li>Multi-jumps chain: keep jumping with the same piece if more captures are available.</li>
+      </ul>
+      <h3>Kings</h3>
+      <p>A piece reaching the far row is crowned and may move diagonally in any direction.</p>`,
+    id: `
+      <h3>Tujuan</h3>
+      <p>Habisi semua bidak lawan, atau bikin lawan tidak bisa jalan.</p>
+      <h3>Gerakan</h3>
+      <ul>
+        <li>Bidak jalan diagonal ke depan, ke kotak gelap kosong.</li>
+        <li>Makan dengan melompati bidak lawan di sebelah, mendarat di kotak kosong setelahnya.</li>
+        <li>Makan itu <strong>wajib</strong> — kalau bisa makan, harus makan.</li>
+        <li>Lompatan berantai: terus lompat kalau masih ada yang bisa dimakan.</li>
+      </ul>
+      <h3>Raja</h3>
+      <p>Bidak yang sampai baris paling jauh jadi raja, bisa jalan diagonal ke segala arah.</p>`,
+  },
+});
 
 const N = 8;
 const boardEl = document.getElementById("board");
@@ -154,6 +185,7 @@ function render() {
       statusEl.textContent = t("ck.win", { p: name(current === "R" ? "B" : "R") });
       statusEl.className = "status-banner win";
       statusEl.hidden = false;
+      fx.play("win"); fx.haptic("win");
     }
   }
 }
@@ -207,6 +239,9 @@ function applyMove(move) {
   board[fr][fc] = null;
   for (const [cr, cc] of move.captures) board[cr][cc] = null;
   board[tr][tc] = piece;
+
+  if (move.captures.length) { fx.play("capture"); fx.haptic("capture"); }
+  else { fx.play("place"); fx.haptic("tap"); }
 
   // Promotion (only if landed on last rank — captures module already made kings mid-chain safe
   // because our chain runs atomically as one move)

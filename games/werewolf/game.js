@@ -7,6 +7,8 @@
 
 import { register, t } from "/shared/i18n.js";
 import { wireGameHead } from "/shared/game-head.js";
+import { fx } from "/shared/fx.js";
+import { attachNameSuggestions, rememberNames } from "/shared/names.js";
 
 register("ww", {
   en: {
@@ -97,7 +99,65 @@ register("ww", {
   },
 });
 
-wireGameHead({ titleEn: "Werewolf", titleId: "Werewolf", subtitleKey: "ww.subtitle" });
+wireGameHead({
+  titleEn: "Werewolf",
+  titleId: "Werewolf",
+  subtitleKey: "ww.subtitle",
+  rules: {
+    en: `
+      <h3>Setup</h3>
+      <ul>
+        <li>5+ players. One person is the moderator and holds the phone.</li>
+        <li>Pick the number of werewolves and whether to include Seer + Doctor.</li>
+        <li>Enter everyone's name (autocompletes from your last games).</li>
+      </ul>
+      <h3>Roles</h3>
+      <ul>
+        <li><strong>Villager</strong> — no power; vote out the wolves by day.</li>
+        <li><strong>Werewolf</strong> — pick a victim each night. Blend in by day.</li>
+        <li><strong>Seer</strong> — each night, learn one player's role.</li>
+        <li><strong>Doctor</strong> — each night, save one player from the wolves.</li>
+      </ul>
+      <h3>Flow</h3>
+      <ol>
+        <li>Pass-phone reveal: each player privately sees their role.</li>
+        <li><em>Night</em>: moderator runs through wolves → seer → doctor prompts.</li>
+        <li><em>Day</em>: discussion + vote to eliminate one player.</li>
+        <li>Repeat until one team wins.</li>
+      </ol>
+      <h3>Win conditions</h3>
+      <ul>
+        <li><strong>Villagers</strong> win by eliminating every werewolf.</li>
+        <li><strong>Werewolves</strong> win when they equal or outnumber surviving villagers.</li>
+      </ul>`,
+    id: `
+      <h3>Pengaturan</h3>
+      <ul>
+        <li>5+ pemain. Satu orang jadi moderator dan pegang HP.</li>
+        <li>Pilih jumlah serigala dan opsi Peramal + Dokter.</li>
+        <li>Isi nama semua pemain (autosuggest dari ronde sebelumnya).</li>
+      </ul>
+      <h3>Peran</h3>
+      <ul>
+        <li><strong>Warga</strong> — tidak ada kemampuan; buang serigala lewat voting siang.</li>
+        <li><strong>Serigala</strong> — pilih korban tiap malam. Pas siang berbaur jadi warga biasa.</li>
+        <li><strong>Peramal</strong> — tiap malam, intip satu pemain untuk tahu perannya.</li>
+        <li><strong>Dokter</strong> — tiap malam, lindungi satu pemain dari serangan serigala.</li>
+      </ul>
+      <h3>Alur</h3>
+      <ol>
+        <li>Reveal estafet: tiap pemain lihat perannya sendiri.</li>
+        <li><em>Malam</em>: moderator jalankan serigala → peramal → dokter.</li>
+        <li><em>Siang</em>: diskusi + voting buang satu pemain.</li>
+        <li>Ulangi sampai salah satu tim menang.</li>
+      </ol>
+      <h3>Syarat menang</h3>
+      <ul>
+        <li><strong>Warga</strong> menang kalau semua serigala mati.</li>
+        <li><strong>Serigala</strong> menang kalau jumlah mereka ≥ warga yang masih hidup.</li>
+      </ul>`,
+  },
+});
 
 const root = document.getElementById("ww-root");
 
@@ -186,7 +246,9 @@ function renderSetup() {
   });
   root.querySelector("#c-seer").addEventListener("change", (e) => { state.seer = e.target.checked; });
   root.querySelector("#c-doctor").addEventListener("change", (e) => { state.doctor = e.target.checked; });
-  root.querySelectorAll(".ww-name-input").forEach((inp) => {
+  const nameInputs = root.querySelectorAll(".ww-name-input");
+  attachNameSuggestions(nameInputs);
+  nameInputs.forEach((inp) => {
     inp.addEventListener("input", () => {
       const idx = +inp.dataset.idx;
       if (!state.players[idx]) state.players[idx] = {};

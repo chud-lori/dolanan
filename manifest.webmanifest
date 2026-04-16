@@ -15,5 +15,35 @@
     { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
     { "src": "/icons/icon-192-maskable.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
     { "src": "/icons/icon-512-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    {
+      "name": "Chess",
+      "short_name": "Chess",
+      "description": "Open a fresh chess board",
+      "url": "/games/chess/",
+      "icons": [{ "src": "/icons/games/chess.svg", "sizes": "any" }]
+    },
+    {
+      "name": "Ludo",
+      "short_name": "Ludo",
+      "description": "Start a Ludo match",
+      "url": "/games/ludo/",
+      "icons": [{ "src": "/icons/games/ludo.svg", "sizes": "any" }]
+    },
+    {
+      "name": "Werewolf",
+      "short_name": "Werewolf",
+      "description": "Pass-phone party game",
+      "url": "/games/werewolf/",
+      "icons": [{ "src": "/icons/games/werewolf.svg", "sizes": "any" }]
+    },
+    {
+      "name": "Truth or Dare",
+      "short_name": "Truth/Dare",
+      "description": "Pass-phone dares",
+      "url": "/games/truth-or-dare/",
+      "icons": [{ "src": "/icons/games/truth-or-dare.svg", "sizes": "any" }]
+    }
   ]
 }

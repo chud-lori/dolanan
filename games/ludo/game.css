@@ -18,18 +18,63 @@
   width: 64px;
   height: 64px;
   padding: 8px;
-  background: #fff;
-  border: 1px solid var(--border);
+  background: linear-gradient(135deg, #ffffff 0%, #e2e8f0 100%);
+  border: 1px solid #cbd5e1;
   border-radius: 14px;
-  box-shadow: var(--shadow);
+  box-shadow:
+    inset 0 -3px 0 rgba(15, 23, 42, 0.08),
+    inset 0 2px 0 rgba(255, 255, 255, 0.8),
+    0 6px 14px rgba(15, 23, 42, 0.18);
   gap: 2px;
+  /* GPU-accelerated for smooth animation */
+  will-change: transform;
+  transform: translateZ(0);
+  transition: transform 0.12s ease-out;
 }
+
 .die-spot { display: block; }
 .die-pip {
-  background: var(--text);
+  background: radial-gradient(circle at 30% 30%, #475569, #0f172a 70%);
   border-radius: 50%;
   width: 10px; height: 10px;
   place-self: center;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+/* Tumbling roll — multi-axis rotate + translate with easing that decelerates. */
+@keyframes die-roll {
+  0%   { transform: rotate(0deg) scale(1); }
+  15%  { transform: rotate(120deg) translate(-8px, -14px) scale(1.18); }
+  30%  { transform: rotate(280deg) translate(10px, -18px) scale(1.22); }
+  45%  { transform: rotate(460deg) translate(-12px, -10px) scale(1.18); }
+  60%  { transform: rotate(620deg) translate(8px, -6px) scale(1.14); }
+  75%  { transform: rotate(780deg) translate(-4px, 0) scale(1.08); }
+  90%  { transform: rotate(900deg) translate(2px, 2px) scale(1.04); }
+  100% { transform: rotate(960deg) scale(1); }
+}
+
+.die.die-rolling {
+  animation: die-roll 0.8s cubic-bezier(0.32, 0.72, 0.36, 1) forwards;
+  box-shadow:
+    inset 0 -3px 0 rgba(15, 23, 42, 0.08),
+    inset 0 2px 0 rgba(255, 255, 255, 0.8),
+    0 16px 26px rgba(15, 23, 42, 0.32);
+}
+
+/* Landing bounce — a quick squash/stretch as the die "settles" on the table. */
+@keyframes die-settle {
+  0%   { transform: scale(1.0) translateY(0); }
+  35%  { transform: scale(1.12, 0.88) translateY(2px); }
+  60%  { transform: scale(0.94, 1.06) translateY(-3px); }
+  100% { transform: scale(1) translateY(0); }
+}
+
+.die.die-settle {
+  animation: die-settle 0.28s cubic-bezier(0.4, 0, 0.6, 1.4);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .die.die-rolling, .die.die-settle { animation: none !important; }
 }
 
 .dice-hint {
@@ -58,10 +103,47 @@
   border: 3px solid #0f172a;
   border-radius: 8px;
   box-shadow: var(--shadow);
-  overflow: hidden;
+  /* allow the active-base glow to extend slightly beyond the board edge */
+  overflow: visible;
   position: relative;
   user-select: none;
   touch-action: manipulation;
+}
+
+/* Pulsing colored frame around the home base of whoever's turn it is.
+   Absolutely positioned so it doesn't compete with the 15×15 grid cells
+   for layout space. The board has `position: relative` so 0/0/40%/40%
+   places this exactly over each 6×6 corner base. */
+.lu-base-overlay {
+  position: absolute;
+  width: 40%;
+  height: 40%;
+  pointer-events: none;
+  border: 4px solid transparent;
+  border-radius: 8px;
+  z-index: 3;
+  transition: border-color 0.25s ease-out;
+}
+.lu-base-overlay[data-color="R"] { top: 0;    left: 0; }
+.lu-base-overlay[data-color="B"] { top: 0;    right: 0; }
+.lu-base-overlay[data-color="G"] { bottom: 0; left: 0; }
+.lu-base-overlay[data-color="Y"] { bottom: 0; right: 0; }
+
+.lu-base-overlay.active {
+  animation: lu-base-glow 1.4s ease-in-out infinite;
+}
+.lu-base-overlay.active[data-color="R"] { border-color: #ef4444; box-shadow: 0 0 22px rgba(239,68,68,0.7); }
+.lu-base-overlay.active[data-color="B"] { border-color: #3b82f6; box-shadow: 0 0 22px rgba(59,130,246,0.7); }
+.lu-base-overlay.active[data-color="G"] { border-color: #10b981; box-shadow: 0 0 22px rgba(16,185,129,0.7); }
+.lu-base-overlay.active[data-color="Y"] { border-color: #eab308; box-shadow: 0 0 22px rgba(234,179,8,0.7); }
+
+@keyframes lu-base-glow {
+  0%, 100% { transform: scale(1.0); filter: brightness(1.0); }
+  50%      { transform: scale(1.015); filter: brightness(1.15); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lu-base-overlay.active { animation: none; }
 }
 
 .lu-cell {
@@ -82,10 +164,20 @@
 .lu-base.Y { background: #eab308; }
 .lu-base.B { background: #3b82f6; }
 
-/* Inner white square within each home base (where tokens wait) */
-.lu-base-inner {
+/* The 4 token-rest seats inside each colored home base — a white circle
+   that sits behind the token. Always visible so empty seats read as "open". */
+.lu-base-spot {
+  position: relative;
+}
+.lu-base-spot::after {
+  content: "";
+  position: absolute;
+  inset: 14%;
+  border-radius: 50%;
   background: #fff;
-  border: 1px solid #94a3b8;
+  border: 1.5px solid rgba(15, 23, 42, 0.15);
+  pointer-events: none;
+  z-index: 0;
 }
 
 /* Entry/safe squares on the track colored per player */
@@ -137,6 +229,7 @@
   font-size: 0.55em;
   font-weight: 700;
   pointer-events: none;
+  z-index: 2;
 }
 
 .lu-tok.R { background: radial-gradient(circle at 30% 30%, #f87171, #b91c1c); }

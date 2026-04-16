@@ -10,7 +10,11 @@ import { join, relative, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = fileURLToPath(new URL("..", import.meta.url));
-const OUT = join(root, "sw.js");
+// BASE lets us build the SW for a sub-path deployment (e.g. "/private").
+// SW_OUT lets the subpath builder point this at its dist/sw.js.
+const BASE = (process.env.BASE || "").replace(/\/$/, "");
+const OUT = process.env.SW_OUT || join(root, "sw.js");
+const withBase = (p) => (p === "/" ? (BASE || "") + "/" : BASE + p);
 
 const SHELL = [
   "/",
@@ -21,7 +25,7 @@ const SHELL = [
   "/hub.js",
   "/games.js",
   "/manifest.webmanifest",
-];
+].map(withBase);
 
 function walk(dir) {
   const out = [];
@@ -46,20 +50,20 @@ function urlsUnder(subdir, { extensions = null } = {}) {
   }
 }
 
-const sharedFiles = urlsUnder("shared");
-const iconFiles = urlsUnder("icons");
+const sharedFiles = urlsUnder("shared").map(withBase);
+const iconFiles = urlsUnder("icons").map(withBase);
 const games = readdirSync(join(root, "games")).filter((n) => {
   try { return statSync(join(root, "games", n)).isDirectory(); } catch { return false; }
 });
 const gameFiles = games.flatMap((slug) => {
   const urls = new Set();
-  urls.add(`/games/${slug}/`);
+  urls.add(withBase(`/games/${slug}/`));
   for (const f of walk(join(root, "games", slug))) {
-    urls.add("/" + relative(root, f).split(sep).join("/"));
+    urls.add(withBase("/" + relative(root, f).split(sep).join("/")));
   }
   return [...urls];
 });
-const rootExtra = ["/og-image.png"];
+const rootExtra = ["/og-image.png"].map(withBase);
 
 const assets = [
   ...SHELL,
