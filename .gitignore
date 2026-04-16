@@ -1,0 +1,24 @@
+# Dev dependencies (used only for testing / icon generation).
+# Don't ship these to the server — the PWA is vanilla HTML/CSS/JS at runtime.
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Visual-audit artifacts — regenerated on demand via `npm run audit`.
+scripts/audit/
+
+# Editor / OS junk
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Ad-hoc temp files
+/tmp/
+*.log
+
+# Python bytecode from the icon generator
+__pycache__/
+*.pyc

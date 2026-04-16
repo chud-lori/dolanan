@@ -89,3 +89,57 @@
     height: 64px;
   }
 }
+
+/* ---- Sister-app card (Ethok cross-link) ---- */
+.hub-sister {
+  margin: 28px 0 8px;
+}
+
+.sister-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  color: var(--text);
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.15s ease-out, box-shadow 0.2s ease-out;
+}
+
+.sister-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
+  color: var(--text);
+}
+
+.sister-emoji {
+  font-size: 32px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.sister-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.sister-title {
+  font-weight: 700;
+  font-size: 15px;
+}
+
+.sister-blurb {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.sister-arrow {
+  color: var(--primary);
+  font-size: 20px;
+  flex-shrink: 0;
+}

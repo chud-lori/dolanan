@@ -119,13 +119,32 @@ Target: `dolanan.lori.my.id` behind Cloudflare + nginx on the same host as
 `ethok.lori.my.id`. Everything is static — `git pull` and a `sw.js` version
 bump is the deploy.
 
+**Runtime footprint is ~900 KB** (HTML + CSS + JS + icons + OG image). The
+rest of what you see in the repo is development tooling:
+
+| Thing                  | Size   | Purpose                       | Ships to server? |
+| ---------------------- | ------ | ----------------------------- | ---------------- |
+| site files (runtime)   | ~900 KB| what the browser actually loads | **yes**        |
+| `.git/`                | ~17 MB | commit history                | no               |
+| `node_modules/`        | ~14 MB | Playwright for local tests    | no               |
+| `scripts/audit/`       | varies | visual-audit screenshots      | no (gitignored)  |
+
+`.gitignore` keeps the last three out of commits. On the server, the nginx
+config also explicitly blocks `/node_modules/`, `/scripts/`, `package.json`,
+and dotfiles in case any of them end up in the deploy tree.
+
 **First-time setup on the VM** (as a user with sudo):
 
 ```bash
-git clone https://github.com/chud-lori/dolanan ~/dolanan
+# Shallow clone — avoids pulling 17 MB of history onto a small VM.
+git clone --depth=1 https://github.com/chud-lori/dolanan ~/dolanan
 sudo chmod o+x /home/ubuntu                 # let nginx traverse
 bash ~/dolanan/deploy/deploy.sh --install   # symlinks site + reload nginx
 ```
+
+> The server does **not** need `node` or `npm install`. `deploy/deploy.sh`
+> only uses node if it's already available (to regenerate `sw.js` in place).
+> Skip it and the committed `sw.js` works fine.
 
 The installer will:
 

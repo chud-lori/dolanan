@@ -117,50 +117,60 @@ function renderSetup() {
     : state.total - state.werewolves <= state.werewolves ? "ww.tooManyWolves"
     : "ww.ready";
 
+  // Layout mirrors Ethok's setup screen: a CSS grid where the names list
+  // occupies the one flexible row and scrolls internally, while the header
+  // (steppers + toggles) and footer (hint + Start) stay pinned.
   root.innerHTML = `
-    <div class="ww-screen">
-      <h2>${t("ww.setupTitle")}</h2>
-      <div class="ww-field">
-        <label>${t("ww.totalPlayers")}</label>
-        <div class="ww-stepper">
-          <button type="button" data-step="total-">−</button>
-          <span class="val" id="v-total">${state.total}</span>
-          <button type="button" data-step="total+">+</button>
+    <div class="ww-setup">
+      <div class="ww-setup-head ww-screen">
+        <h2>${t("ww.setupTitle")}</h2>
+        <div class="ww-field">
+          <label>${t("ww.totalPlayers")}</label>
+          <div class="ww-stepper">
+            <button type="button" data-step="total-">−</button>
+            <span class="val" id="v-total">${state.total}</span>
+            <button type="button" data-step="total+">+</button>
+          </div>
+        </div>
+        <div class="ww-field">
+          <label>${t("ww.werewolves")}</label>
+          <div class="ww-stepper">
+            <button type="button" data-step="ww-">−</button>
+            <span class="val" id="v-ww">${state.werewolves}</span>
+            <button type="button" data-step="ww+">+</button>
+          </div>
+        </div>
+        <div class="ww-field">
+          <label>${t("ww.includeSeer")}</label>
+          <input type="checkbox" id="c-seer" ${state.seer ? "checked" : ""} />
+        </div>
+        <div class="ww-field">
+          <label>${t("ww.includeDoctor")}</label>
+          <input type="checkbox" id="c-doctor" ${state.doctor ? "checked" : ""} />
         </div>
       </div>
-      <div class="ww-field">
-        <label>${t("ww.werewolves")}</label>
-        <div class="ww-stepper">
-          <button type="button" data-step="ww-">−</button>
-          <span class="val" id="v-ww">${state.werewolves}</span>
-          <button type="button" data-step="ww+">+</button>
+
+      <div class="ww-setup-names ww-screen">
+        <h3>${t("ww.names")}</h3>
+        <div id="names" class="ww-names">
+          ${Array.from({ length: state.total })
+            .map((_, i) => {
+              const placeholder = t("ww.defaultName", { n: i + 1 });
+              const v = state.players[i]?.name ?? "";
+              return `<input type="text" class="ww-name-input" data-idx="${i}" placeholder="${placeholder}" value="${v}" />`;
+            })
+            .join("")}
         </div>
       </div>
-      <div class="ww-field">
-        <label>${t("ww.includeSeer")}</label>
-        <input type="checkbox" id="c-seer" ${state.seer ? "checked" : ""} />
+
+      <div class="ww-setup-foot">
+        <p class="ww-hint" style="color: ${valid ? "var(--success)" : "var(--danger)"};">
+          ${t(hintKey)}
+        </p>
+        <button id="start" type="button" class="btn btn-primary" ${valid ? "" : "disabled"} style="width: 100%;">
+          ${t("ww.start")}
+        </button>
       </div>
-      <div class="ww-field">
-        <label>${t("ww.includeDoctor")}</label>
-        <input type="checkbox" id="c-doctor" ${state.doctor ? "checked" : ""} />
-      </div>
-      <hr style="border: none; border-top: 1px solid var(--border); margin: 12px 0;" />
-      <h3>${t("ww.names")}</h3>
-      <div id="names" class="ww-names">
-        ${Array.from({ length: state.total })
-          .map((_, i) => {
-            const placeholder = t("ww.defaultName", { n: i + 1 });
-            const v = state.players[i]?.name ?? "";
-            return `<input type="text" class="ww-name-input" data-idx="${i}" placeholder="${placeholder}" value="${v}" />`;
-          })
-          .join("")}
-      </div>
-      <p style="margin-top: 12px; color: ${valid ? "var(--success)" : "var(--danger)"};">
-        ${t(hintKey)}
-      </p>
-      <button id="start" type="button" class="btn btn-primary" ${valid ? "" : "disabled"} style="width: 100%;">
-        ${t("ww.start")}
-      </button>
     </div>
   `;
 

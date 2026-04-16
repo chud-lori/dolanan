@@ -169,13 +169,61 @@
   background: var(--card-2);
 }
 
-/* Two-column grid so 6-8 player inputs still fit one phone screen. */
+/* ---- Setup screen: Ethok pattern ----
+   The setup is a CSS grid pinned to the remaining viewport height. The
+   player names card takes the single flexible row and scrolls INTERNALLY,
+   so the header (steppers, toggles) and footer (hint + Start) never move
+   off-screen — no matter how many players you add. */
+
+.ww-setup {
+  display: grid;
+  grid-template-rows: auto minmax(80px, 1fr) auto;
+  gap: 12px;
+  /* 140px = rough budget for back link + game header + footer credit.
+     100dvh keeps this snug on mobile browsers where the address bar grows. */
+  height: calc(100dvh - 140px);
+  min-height: 360px;
+  overflow: hidden;
+}
+
+.ww-setup-head { margin: 0; }
+
+/* The middle card clips; its inner list is the actual scroll container. */
+.ww-setup-names {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+  margin: 0;
+}
+
+.ww-setup-names h3 {
+  margin: 0 0 8px;
+  flex-shrink: 0;
+}
+
+/* The real scroller — matches Ethok's #player-inputs. */
 .ww-names {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 6px 8px;
-  margin-bottom: 10px;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  /* Small inset so the focus ring isn't clipped by the scroll edge. */
+  padding: 4px;
+  margin: -4px;
 }
+
+.ww-setup-foot {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ww-hint { margin: 0; font-size: 13px; }
 
 @media (max-width: 340px) {
   .ww-names { grid-template-columns: 1fr; }
