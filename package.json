@@ -1,0 +1,17 @@
+{
+  "name": "dolanan",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Offline-first PWA hub of casual party games.",
+  "scripts": {
+    "build:sw": "node scripts/build-sw.mjs",
+    "icons": "python3 scripts/_gen_icons.py",
+    "serve": "python3 -m http.server 8765",
+    "test": "node scripts/smoke-test.mjs",
+    "audit": "node scripts/visual-audit.mjs"
+  },
+  "devDependencies": {
+    "playwright": "^1.59.1"
+  }
+}

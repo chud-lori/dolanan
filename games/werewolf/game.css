@@ -1,0 +1,182 @@
+.ww-root {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.ww-screen {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  box-shadow: var(--shadow);
+}
+
+.ww-screen h2 { margin-bottom: 6px; }
+.ww-screen p { color: var(--text-muted); margin-bottom: 10px; }
+
+@media (max-width: 480px) {
+  .ww-screen { padding: 12px; }
+  .ww-screen h2 { font-size: 18px; }
+  .ww-field { margin: 4px 0; }
+  .ww-emoji { font-size: 48px; }
+  .ww-role-badge { font-size: 20px; padding: 10px 20px; }
+  .ww-stepper button { width: 32px; height: 32px; font-size: 16px; }
+  .ww-stepper .val { min-width: 32px; line-height: 32px; }
+  .ww-name-input { padding: 6px 10px; font-size: 13px; }
+  .ww-player-btn { padding: 10px 12px; }
+}
+
+.ww-field {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin: 8px 0;
+}
+
+.ww-field label {
+  flex: 1;
+  font-weight: 600;
+}
+
+.ww-stepper {
+  display: inline-flex;
+  background: var(--card-2);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.ww-stepper button {
+  width: 38px;
+  height: 38px;
+  border: none;
+  background: transparent;
+  font-size: 18px;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.ww-stepper button:hover { background: var(--bg-2); }
+
+.ww-stepper .val {
+  min-width: 40px;
+  text-align: center;
+  line-height: 38px;
+  font-weight: 700;
+}
+
+.ww-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ww-player-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  background: var(--card-2);
+  border-radius: var(--radius);
+}
+
+.ww-player-item.dead {
+  opacity: 0.5;
+  text-decoration: line-through;
+}
+
+.ww-player-btn {
+  width: 100%;
+  text-align: left;
+  padding: 14px;
+  background: var(--card-2);
+  border: 2px solid transparent;
+  border-radius: var(--radius);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.ww-player-btn:hover { background: var(--bg-2); }
+
+.ww-player-btn.selected {
+  border-color: var(--primary);
+  background: var(--bg-2);
+}
+
+.ww-role-reveal {
+  text-align: center;
+}
+
+.ww-role-badge {
+  display: inline-block;
+  padding: 14px 28px;
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  color: #fff;
+  border-radius: var(--radius);
+  font-weight: 800;
+  font-size: 24px;
+  letter-spacing: 1px;
+  margin: 12px 0;
+}
+
+.ww-role-badge.werewolf {
+  background: linear-gradient(135deg, #0f172a, #334155);
+}
+
+.ww-role-badge.seer {
+  background: linear-gradient(135deg, #7c3aed, #a855f7);
+}
+
+.ww-role-badge.doctor {
+  background: linear-gradient(135deg, #10b981, #059669);
+}
+
+.ww-role-badge.villager {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+}
+
+.ww-emoji {
+  font-size: 64px;
+  line-height: 1;
+  margin: 8px 0;
+}
+
+.ww-cover {
+  cursor: pointer;
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  color: #fff;
+  padding: 40px 20px;
+  text-align: center;
+  border-radius: var(--radius-lg);
+  font-weight: 700;
+  font-size: 20px;
+  border: none;
+  width: 100%;
+}
+
+.ww-cover small { display: block; font-weight: 400; opacity: 0.9; margin-top: 6px; font-size: 14px; }
+
+.ww-name-input {
+  width: 100%;
+  min-width: 0;
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font: inherit;
+  background: var(--card-2);
+}
+
+/* Two-column grid so 6-8 player inputs still fit one phone screen. */
+.ww-names {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 6px 8px;
+  margin-bottom: 10px;
+}
+
+@media (max-width: 340px) {
+  .ww-names { grid-template-columns: 1fr; }
+}

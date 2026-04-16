@@ -1,0 +1,30 @@
+.db-board {
+  width: min(94vw, 48vh, 520px);
+  height: auto;
+  background: var(--card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  touch-action: manipulation;
+}
+
+.db-dot { fill: #1e3a8a; }
+.db-edge { stroke: transparent; stroke-width: 3; cursor: pointer; transition: stroke 0.15s; }
+.db-edge:hover:not(.locked) { stroke: rgba(59, 130, 246, 0.4); }
+.db-edge.locked { cursor: default; }
+.db-edge.p1 { stroke: #3b82f6; }
+.db-edge.p2 { stroke: #f59e0b; }
+
+.db-hit {
+  fill: transparent;
+  cursor: pointer;
+}
+
+.db-box.p1 { fill: rgba(59, 130, 246, 0.45); }
+.db-box.p2 { fill: rgba(245, 158, 11, 0.45); }
+.db-box-label {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-weight: 800;
+  font-size: 4px;
+  fill: #fff;
+  pointer-events: none;
+}

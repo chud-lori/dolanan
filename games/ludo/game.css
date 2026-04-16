@@ -1,0 +1,162 @@
+/* Traditional Ludo cross board rendered on a 15x15 CSS grid.
+   Only cells that are part of the layout (home bases, track, home columns,
+   center) get visible backgrounds — the rest are transparent. */
+
+.dice-area {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 8px 0;
+  flex-wrap: wrap;
+}
+
+.die {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  width: 64px;
+  height: 64px;
+  padding: 8px;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  box-shadow: var(--shadow);
+  gap: 2px;
+}
+.die-spot { display: block; }
+.die-pip {
+  background: var(--text);
+  border-radius: 50%;
+  width: 10px; height: 10px;
+  place-self: center;
+}
+
+.dice-hint {
+  color: var(--text-muted);
+  font-size: 13px;
+  text-align: center;
+  min-height: 18px;
+  width: 100%;
+}
+
+/* --------- Board --------- */
+
+.lu-board-wrap {
+  display: flex;
+  justify-content: center;
+  padding: 4px 0;
+}
+
+.lu-board {
+  display: grid;
+  grid-template-columns: repeat(15, 1fr);
+  grid-template-rows: repeat(15, 1fr);
+  width: min(96vw, 52vh, 520px);
+  aspect-ratio: 1;
+  background: #fff;
+  border: 3px solid #0f172a;
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  position: relative;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+.lu-cell {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  border: 1px solid #cbd5e1;
+  background: #fff;
+  box-sizing: border-box;
+}
+
+/* Home base cells — the thick colored quadrants */
+.lu-base {
+  border-color: rgba(255, 255, 255, 0.4);
+}
+.lu-base.R { background: #ef4444; }
+.lu-base.G { background: #10b981; }
+.lu-base.Y { background: #eab308; }
+.lu-base.B { background: #3b82f6; }
+
+/* Inner white square within each home base (where tokens wait) */
+.lu-base-inner {
+  background: #fff;
+  border: 1px solid #94a3b8;
+}
+
+/* Entry/safe squares on the track colored per player */
+.lu-track.entry-R { background: #fecaca; }
+.lu-track.entry-G { background: #bbf7d0; }
+.lu-track.entry-Y { background: #fef08a; }
+.lu-track.entry-B { background: #bfdbfe; }
+
+/* Home column cells */
+.lu-home-col.R { background: #fecaca; }
+.lu-home-col.G { background: #bbf7d0; }
+.lu-home-col.Y { background: #fef08a; }
+.lu-home-col.B { background: #bfdbfe; }
+
+/* Safe (star) squares */
+.lu-track.safe::after {
+  content: "★";
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #94a3b8;
+  font-size: 0.9em;
+  pointer-events: none;
+}
+
+/* Center 3x3 "home" triangles — drawn as tinted cells */
+.lu-center {
+  border: none;
+}
+.lu-center.R { background: linear-gradient(135deg, #ef4444 50%, transparent 50%); }
+.lu-center.G { background: linear-gradient(225deg, #10b981 50%, transparent 50%); }
+.lu-center.Y { background: linear-gradient(315deg, #eab308 50%, transparent 50%); }
+.lu-center.B { background: linear-gradient(45deg,  #3b82f6 50%, transparent 50%); }
+.lu-center.mid { background: #fff; border: 1px solid #94a3b8; }
+
+/* Tokens sitting on a cell (home base, track, home column, or finish area) */
+.lu-tok {
+  position: absolute;
+  inset: 12%;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 0.55em;
+  font-weight: 700;
+  pointer-events: none;
+}
+
+.lu-tok.R { background: radial-gradient(circle at 30% 30%, #f87171, #b91c1c); }
+.lu-tok.G { background: radial-gradient(circle at 30% 30%, #34d399, #047857); }
+.lu-tok.Y { background: radial-gradient(circle at 30% 30%, #fcd34d, #a16207); }
+.lu-tok.B { background: radial-gradient(circle at 30% 30%, #60a5fa, #1e40af); }
+
+.lu-tok.movable {
+  cursor: pointer;
+  pointer-events: auto;
+  animation: lu-pulse 1.1s ease-in-out infinite;
+  outline: 2px solid #fef3c7;
+}
+
+@keyframes lu-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.18); }
+}
+
+/* Setup card */
+#setup { text-align: center; }
+#setup h2 { margin-bottom: 10px; }
+#setup .row { justify-content: center; }

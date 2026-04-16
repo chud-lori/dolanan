@@ -1,0 +1,15 @@
+import { chromium, devices } from "playwright";
+const b = await chromium.launch();
+const ctx = await b.newContext({ ...devices["iPhone 13"] });
+const p = await ctx.newPage();
+p.on("pageerror", (e) => console.log("ERR:", e.message));
+p.on("console", (m) => { if (m.type()==="error") console.log("C:", m.text()); });
+await p.goto("http://localhost:8765/games/ludo/", { waitUntil: "networkidle" });
+await p.click('button[data-n="4"]');
+await p.waitForTimeout(400);
+await p.screenshot({ path: "/tmp/ludo-start.png", fullPage: true });
+await p.click("#roll");
+await p.waitForTimeout(800);
+await p.screenshot({ path: "/tmp/ludo-rolled.png", fullPage: true });
+await b.close();
+console.log("done");

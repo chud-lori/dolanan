@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Battleship">
+  <rect width="64" height="64" rx="14" fill="#bfdbfe"/>
+  <path d="M0 42 Q16 38 32 42 Q48 46 64 42 L64 64 L0 64 Z" fill="#3b82f6"/>
+  <rect x="12" y="34" width="40" height="8" fill="#1e3a8a"/>
+  <rect x="20" y="24" width="24" height="10" fill="#1e3a8a"/>
+  <rect x="28" y="14" width="4" height="12" fill="#1e3a8a"/>
+  <rect x="30" y="10" width="10" height="4" fill="#ef4444"/>
+  <g fill="#fef3c7">
+    <circle cx="16" cy="38" r="1.5"/>
+    <circle cx="24" cy="38" r="1.5"/>
+    <circle cx="32" cy="38" r="1.5"/>
+    <circle cx="40" cy="38" r="1.5"/>
+    <circle cx="48" cy="38" r="1.5"/>
+  </g>
+</svg>

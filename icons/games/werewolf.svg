@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Werewolf">
+  <rect width="64" height="64" rx="14" fill="#0f172a"/>
+  <circle cx="48" cy="18" r="6" fill="#fef3c7"/>
+  <path d="M16 48 Q22 28 32 30 Q42 28 48 48 Q48 54 40 54 L24 54 Q16 54 16 48 Z" fill="#64748b"/>
+  <path d="M20 34 L24 28 L28 34 Z M36 34 L40 28 L44 34 Z" fill="#64748b"/>
+  <circle cx="26" cy="42" r="2" fill="#fbbf24"/>
+  <circle cx="38" cy="42" r="2" fill="#fbbf24"/>
+  <path d="M28 50 L32 48 L36 50" stroke="#fff" stroke-width="1.2" fill="none"/>
+</svg>

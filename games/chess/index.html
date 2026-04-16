@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#3b82f6" />
+    <title>Chess — Dolanan</title>
+    <meta name="description" content="Play Chess for two, offline. Full rules: castling, en passant, pawn promotion, check, checkmate, stalemate." />
+    <link rel="canonical" href="https://dolanan.lori.my.id/games/chess/" />
+    <meta property="og:title" content="Chess — Dolanan" />
+    <meta property="og:description" content="Offline 2-player chess with full rules." />
+    <meta property="og:image" content="https://dolanan.lori.my.id/og-image.png" />
+    <meta property="og:url" content="https://dolanan.lori.my.id/games/chess/" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="icon" href="/icons/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="stylesheet" href="/style.css" />
+    <link rel="stylesheet" href="/shared/ui.css" />
+    <link rel="stylesheet" href="./game.css" />
+    <script type="module" src="./game.js" defer></script>
+  </head>
+  <body>
+    <a class="back-link" href="/" data-i18n="nav.back">← Back</a>
+
+    <main class="game-shell">
+      <header class="game-header">
+        <div>
+          <h1 class="game-title">Chess</h1>
+          <p class="game-subtitle"></p>
+        </div>
+        <div id="turn-pill" class="turn-pill">
+          <span class="turn-dot white"></span>
+          <span id="turn-label"></span>
+        </div>
+      </header>
+
+      <div class="board-wrap">
+        <div id="board" class="ch-board" aria-label="Chess board"></div>
+      </div>
+
+      <div id="status" class="status-banner" hidden></div>
+
+      <div class="row" style="justify-content: center; margin-top: 16px;">
+        <button id="undo" type="button" class="btn btn-secondary" data-i18n="btn.undo">↶ Undo</button>
+        <button id="reset" type="button" class="btn btn-primary" data-i18n="btn.newGame">New game</button>
+      </div>
+    </main>
+
+    <div id="promo" class="modal-backdrop" hidden>
+      <div class="modal">
+        <h2 id="promo-title">Promote pawn</h2>
+        <div class="modal-actions" id="promo-choices"></div>
+      </div>
+    </div>
+
+    <footer class="app-footer">
+      <span data-i18n="credit.by">Created by</span>
+      <a href="https://profile.lori.my.id" rel="noopener">Lori</a>
+    </footer>
+  </body>
+</html>

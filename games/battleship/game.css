@@ -1,0 +1,92 @@
+.bs-root {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+}
+
+.bs-board {
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  gap: 2px;
+  background: var(--bg-2);
+  padding: 4px;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  width: min(96vw, 400px);
+  aspect-ratio: 1;
+  touch-action: manipulation;
+}
+
+.bs-cell {
+  background: #cfe7ff;
+  border: none;
+  aspect-ratio: 1;
+  cursor: pointer;
+  border-radius: 3px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  min-width: 0;
+}
+
+.bs-cell.ship { background: #64748b; }
+.bs-cell.ghost { background: #a78bfa; }
+.bs-cell.invalid { background: #fca5a5; }
+.bs-cell.hit { background: #ef4444; color: #fff; }
+.bs-cell.miss { background: #60a5fa; color: #fff; }
+.bs-cell.sunk { background: #991b1b; color: #fff; }
+.bs-cell.hidden-ship { background: #cfe7ff; }
+
+.bs-cover {
+  display: block;
+  width: 100%;
+  padding: 40px 20px;
+  text-align: center;
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-lg);
+  font-weight: 700;
+  font-size: 20px;
+  cursor: pointer;
+}
+.bs-cover small { display:block; font-weight:400; opacity:0.9; margin-top:6px; font-size:14px; }
+
+.bs-info {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px 16px;
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+}
+
+.bs-fleet {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: center;
+  margin: 8px 0;
+}
+
+.bs-ship-chip {
+  padding: 6px 10px;
+  background: var(--card-2);
+  border-radius: 999px;
+  font-size: 13px;
+}
+
+.bs-ship-chip.placing { background: var(--bg-2); border: 2px solid var(--primary); }
+.bs-ship-chip.placed { opacity: 0.5; text-decoration: line-through; }
+.bs-ship-chip.sunk { background: #fee2e2; color: var(--danger); }
+
+.bs-controls {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  flex-wrap: wrap;
+}

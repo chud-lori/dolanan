@@ -1,0 +1,18 @@
+.ttt-board {
+  grid-template-columns: repeat(3, 1fr);
+  width: min(92vw, 50vh, 360px);
+}
+
+.ttt-board .cell {
+  font-size: clamp(40px, 12vw, 64px);
+  aspect-ratio: 1;
+}
+
+@media (max-width: 480px) {
+  .score-strip { padding: 8px; margin: 8px 0; }
+  .score-strip .value { font-size: 18px; }
+  .score-strip .label { font-size: 11px; }
+}
+
+.ttt-board .cell.x { color: var(--primary); }
+.ttt-board .cell.o { color: var(--accent-warm); }

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#3b82f6" />
+    <title>Connect Four — Dolanan</title>
+    <meta name="description" content="Play Connect Four for two, offline. Drop pieces and line up four in a row." />
+    <link rel="canonical" href="https://dolanan.lori.my.id/games/connect-four/" />
+    <meta property="og:title" content="Connect Four — Dolanan" />
+    <meta property="og:description" content="Offline 2-player Connect Four in your browser." />
+    <meta property="og:image" content="https://dolanan.lori.my.id/og-image.png" />
+    <meta property="og:url" content="https://dolanan.lori.my.id/games/connect-four/" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="icon" href="/icons/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="stylesheet" href="/style.css" />
+    <link rel="stylesheet" href="/shared/ui.css" />
+    <link rel="stylesheet" href="./game.css" />
+    <script type="module" src="./game.js" defer></script>
+  </head>
+  <body>
+    <a class="back-link" href="/" data-i18n="nav.back">← Back</a>
+
+    <main class="game-shell">
+      <header class="game-header">
+        <div>
+          <h1 class="game-title">Connect Four</h1>
+          <p class="game-subtitle"></p>
+        </div>
+        <div id="turn-pill" class="turn-pill">
+          <span class="turn-dot red"></span>
+          <span id="turn-label"></span>
+        </div>
+      </header>
+
+      <div class="board-wrap">
+        <div id="board" class="c4-board" aria-label="Connect Four board"></div>
+      </div>
+
+      <div id="status" class="status-banner" hidden></div>
+
+      <div class="row" style="justify-content: center; margin-top: 16px;">
+        <button id="reset" type="button" class="btn btn-primary" data-i18n="btn.newRound">New round</button>
+      </div>
+    </main>
+
+    <footer class="app-footer">
+      <span data-i18n="credit.by">Created by</span>
+      <a href="https://profile.lori.my.id" rel="noopener">Lori</a>
+    </footer>
+  </body>
+</html>

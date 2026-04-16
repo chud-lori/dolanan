@@ -1,0 +1,61 @@
+.ck-board {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  grid-template-rows: repeat(8, 1fr);
+  width: min(96vw, 62vh, 560px);
+  aspect-ratio: 1;
+  background: var(--card);
+  border: 3px solid #1e3a8a;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+.ck-sq { min-width: 0; min-height: 0; }
+
+.ck-sq {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f8fafc;
+  border: none;
+  padding: 0;
+  cursor: default;
+}
+
+.ck-sq.dark {
+  background: #1e3a8a;
+  cursor: pointer;
+}
+
+.ck-sq.selected { outline: 3px solid #f59e0b; outline-offset: -3px; z-index: 2; }
+.ck-sq.hint::after {
+  content: "";
+  position: absolute;
+  width: 30%;
+  height: 30%;
+  background: rgba(16, 185, 129, 0.85);
+  border-radius: 50%;
+}
+
+.ck-piece {
+  width: 70%;
+  height: 70%;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  color: rgba(255, 255, 255, 0.9);
+  box-shadow: inset 0 -4px 0 rgba(0, 0, 0, 0.25), 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+.ck-piece.red { background: linear-gradient(135deg, #ef4444, #b91c1c); }
+.ck-piece.black { background: linear-gradient(135deg, #111827, #000); color: #fef3c7; }
+.ck-piece.king::after {
+  content: "♔";
+  font-size: clamp(18px, 4vw, 28px);
+}

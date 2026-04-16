@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#3b82f6" />
+    <title>Ludo — Dolanan</title>
+    <meta name="description" content="Play Ludo for 2-4 players, offline. Roll dice, race your tokens home, capture opponents along the way." />
+    <link rel="canonical" href="https://dolanan.lori.my.id/games/ludo/" />
+    <meta property="og:title" content="Ludo — Dolanan" />
+    <meta property="og:description" content="Offline 2-4 player Ludo in your browser." />
+    <meta property="og:image" content="https://dolanan.lori.my.id/og-image.png" />
+    <meta property="og:url" content="https://dolanan.lori.my.id/games/ludo/" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="icon" href="/icons/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="stylesheet" href="/style.css" />
+    <link rel="stylesheet" href="/shared/ui.css" />
+    <link rel="stylesheet" href="./game.css" />
+    <script type="module" src="./game.js" defer></script>
+  </head>
+  <body>
+    <a class="back-link" href="/" data-i18n="nav.back">← Back</a>
+
+    <main class="game-shell">
+      <header class="game-header">
+        <div>
+          <h1 class="game-title">Ludo</h1>
+          <p class="game-subtitle"></p>
+        </div>
+        <div id="turn-pill" class="turn-pill">
+          <span class="turn-dot red"></span>
+          <span id="turn-label"></span>
+        </div>
+      </header>
+
+      <div id="setup" class="card" style="text-align: center;">
+        <h2 data-i18n="setup.howMany">How many players?</h2>
+        <div class="row" style="justify-content: center;">
+          <button class="btn btn-primary" data-n="2">2</button>
+          <button class="btn btn-primary" data-n="3">3</button>
+          <button class="btn btn-primary" data-n="4">4</button>
+        </div>
+      </div>
+
+      <div id="play" hidden>
+        <div class="lu-board-wrap">
+          <div id="board" class="lu-board" aria-label="Ludo board"></div>
+        </div>
+
+        <section class="dice-area">
+          <div id="die" class="die" aria-label="Die"></div>
+          <button id="roll" class="btn btn-primary" type="button" data-i18n="btn.roll">🎲 Roll</button>
+          <div id="dice-hint" class="dice-hint"></div>
+        </section>
+      </div>
+
+      <div id="status" class="status-banner" hidden></div>
+
+      <div class="row" style="justify-content: center; margin-top: 16px;">
+        <button id="reset" type="button" class="btn btn-ghost" data-i18n="btn.newGame">New game</button>
+      </div>
+    </main>
+
+    <footer class="app-footer">
+      <span data-i18n="credit.by">Created by</span>
+      <a href="https://profile.lori.my.id" rel="noopener">Lori</a>
+    </footer>
+  </body>
+</html>

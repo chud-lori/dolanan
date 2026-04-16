@@ -1,0 +1,91 @@
+/* Hub-specific layout */
+
+.hub {
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+.hub-controls {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin: 8px 0 24px;
+  flex-wrap: wrap;
+}
+
+#games-heading {
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--text-muted);
+  margin: 24px 0 12px;
+  padding-left: 4px;
+}
+
+.game-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 12px;
+}
+
+.game-tile {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 14px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  color: var(--text);
+  box-shadow: var(--shadow-sm);
+  transition:
+    transform 0.15s ease-out,
+    box-shadow 0.2s ease-out;
+  min-height: 160px;
+  position: relative;
+}
+
+.game-tile:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
+  color: var(--text);
+}
+
+.game-tile:active {
+  transform: translateY(0);
+}
+
+.tile-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 12px;
+  margin-bottom: 4px;
+}
+
+.tile-name {
+  font-weight: 700;
+  font-size: 15px;
+  line-height: 1.2;
+}
+
+.tile-meta {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.tile-blurb {
+  font-size: 12.5px;
+  color: var(--text-muted);
+  margin-top: auto;
+  line-height: 1.35;
+}
+
+@media (min-width: 720px) {
+  .game-grid {
+    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  }
+  .tile-icon {
+    width: 64px;
+    height: 64px;
+  }
+}
