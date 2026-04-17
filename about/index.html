@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#3b82f6" />
+    <title>About — Dolanan</title>
+    <meta name="description" content="About Dolanan — an offline-first PWA hub of casual party games." />
+    <link rel="canonical" href="https://dolanan.lori.my.id/about/" />
+    <meta property="og:title" content="About Dolanan" />
+    <meta property="og:description" content="Offline-first hub of casual local-multiplayer games." />
+    <meta property="og:image" content="https://dolanan.lori.my.id/og-image.png" />
+    <meta property="og:url" content="https://dolanan.lori.my.id/about/" />
+    <link rel="icon" href="/icons/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="stylesheet" href="/style.css" />
+    <link rel="stylesheet" href="./about.css" />
+    <script type="module" src="./about.js" defer></script>
+  </head>
+  <body>
+    <a class="back-link" href="/" data-i18n="nav.back">← Back</a>
+
+    <main class="about-shell">
+      <header class="about-header">
+        <img src="/icons/icon-192.png" alt="" width="96" height="96" class="about-icon" />
+        <h1 class="logo">Dolanan</h1>
+        <p class="tagline" data-i18n="hub.tagline">Casual games for hanging out with friends.</p>
+      </header>
+
+      <section class="card about-card">
+        <h2 data-i18n="about.what">What is this</h2>
+        <p data-i18n="about.whatBody">
+          A single installable web app bundling casual local-multiplayer games — chess, ludo, connect four, werewolf, battleship, hangman, congklak, and more — designed for pass-the-device or one-screen hotseat play. Fully offline after the first visit, no accounts, no backend, no telemetry.
+        </p>
+
+        <h3 data-i18n="about.principles">Principles</h3>
+        <ul>
+          <li data-i18n="about.p1">Offline-first — works after first visit</li>
+          <li data-i18n="about.p2">No accounts, no tracking</li>
+          <li data-i18n="about.p3">English + Indonesian + Javanese</li>
+          <li data-i18n="about.p4">Light + dark mode, mobile-first</li>
+          <li data-i18n="about.p5">Sound + haptics, screen wake-lock</li>
+        </ul>
+
+        <h3 data-i18n="about.tech">Built with</h3>
+        <p data-i18n="about.techBody">
+          Vanilla HTML/CSS/JS. No framework. ~900 KB total. Service Worker for offline.
+        </p>
+
+        <h3 data-i18n="about.credits">Credits</h3>
+        <p data-i18n="about.creditsBody">
+          Created by <a href="https://profile.lori.my.id" rel="noopener">Lori</a>. Sister app: <a href="https://ethok.lori.my.id" rel="noopener">Ethok-Ethok</a>.
+        </p>
+
+        <h3 data-i18n="about.source">Source</h3>
+        <p>
+          <a href="https://github.com/chud-lori/dolanan" rel="noopener">github.com/chud-lori/dolanan</a>
+        </p>
+
+        <p class="about-version">
+          <span data-i18n="about.version">Version</span>:
+          <span id="about-version">—</span>
+        </p>
+      </section>
+    </main>
+  </body>
+</html>

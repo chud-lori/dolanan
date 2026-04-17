@@ -5,13 +5,13 @@
     <meta name="color-scheme" content="light dark" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="theme-color" content="#3b82f6" />
-    <title>Congklak — Dolanan</title>
-    <meta name="description" content="Play Congklak (Dakon) offline. Traditional Indonesian mancala for two players — sow seeds, relay, capture, and fill your store." />
-    <link rel="canonical" href="https://dolanan.lori.my.id/games/congklak/" />
-    <meta property="og:title" content="Congklak — Dolanan" />
-    <meta property="og:description" content="Traditional Indonesian mancala for two." />
-    <meta property="og:image" content="https://dolanan.lori.my.id/og/congklak.png" />
-    <meta property="og:url" content="https://dolanan.lori.my.id/games/congklak/" />
+    <title>Halma — Dolanan</title>
+    <meta name="description" content="Play Halma offline for two. Move pieces by stepping or jumping; first to fill the opponent's corner wins." />
+    <link rel="canonical" href="https://dolanan.lori.my.id/games/halma/" />
+    <meta property="og:title" content="Halma — Dolanan" />
+    <meta property="og:description" content="Offline 2-player Halma — step + jump strategy." />
+    <meta property="og:image" content="https://dolanan.lori.my.id/og/halma.png" />
+    <meta property="og:url" content="https://dolanan.lori.my.id/games/halma/" />
     <meta name="twitter:card" content="summary_large_image" />
     <link rel="icon" href="/icons/favicon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
@@ -27,30 +27,25 @@
     <main class="game-shell">
       <header class="game-header">
         <div>
-          <h1 class="game-title">Congklak</h1>
+          <h1 class="game-title">Halma</h1>
           <p class="game-subtitle"></p>
         </div>
         <div id="turn-pill" class="turn-pill">
-          <span class="turn-dot blue"></span>
+          <span class="turn-dot red"></span>
           <span id="turn-label"></span>
         </div>
       </header>
 
-      <div class="ck-board-wrap">
-        <div id="board" class="ck-board" aria-label="Congklak board"></div>
-      </div>
-
-      <div class="score-strip">
-        <div class="score"><span class="label" data-i18n="cg.p1">Player 1</span><span id="score-1" class="value">0</span></div>
-        <div class="score"><span class="label" data-i18n="cg.p2">Player 2</span><span id="score-2" class="value">0</span></div>
+      <div class="board-wrap">
+        <div id="board" class="hl-board" aria-label="Halma board"></div>
       </div>
 
       <div id="status" class="status-banner" hidden></div>
 
       <div class="row" style="justify-content: center; margin-top: 12px;">
+        <button id="end-jump" type="button" class="btn btn-secondary" hidden data-i18n="hl.endJump">End jump</button>
         <button id="reset" type="button" class="btn btn-primary" data-i18n="btn.newGame">New game</button>
       </div>
     </main>
-
   </body>
 </html>

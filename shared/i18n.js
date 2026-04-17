@@ -5,7 +5,7 @@
 import { storage } from "./storage.js";
 
 const DEFAULT = "en";
-const SUPPORTED = ["en", "id"];
+const SUPPORTED = ["en", "id", "jw"];
 
 // Shared "common" scope — used by hub + every game.
 const COMMON = {
@@ -17,6 +17,7 @@ const COMMON = {
     "hub.offlineReady": "Works offline",
     "hub.alsoTry": "Also try",
     "hub.sisterBlurb": "Social deduction party game — find the impostor.",
+    "hub.about": "About",
     "nav.back": "← Back",
     "nav.howTo": "How to play",
     "btn.newGame": "New game",
@@ -48,6 +49,7 @@ const COMMON = {
     "hub.offlineReady": "Bisa offline",
     "hub.alsoTry": "Coba juga",
     "hub.sisterBlurb": "Gim deduksi sosial — tebak penyamarnya.",
+    "hub.about": "Tentang",
     "nav.back": "← Kembali",
     "nav.howTo": "Cara main",
     "btn.newGame": "Main lagi",
@@ -70,6 +72,38 @@ const COMMON = {
     "players.count": "{n} pemain",
     "setup.howMany": "Berapa pemain?",
     "credit.by": "Dibuat oleh",
+  },
+  jw: {
+    "hub.tagline": "Kumpulan dolanan santai kanggo bareng kanca.",
+    "hub.games": "Dolanan",
+    "hub.install": "Instal aplikasi",
+    "hub.language": "Basa",
+    "hub.offlineReady": "Isa offline",
+    "hub.alsoTry": "Coba uga",
+    "hub.sisterBlurb": "Dolanan deduksi sosial — tebak penyamare.",
+    "hub.about": "Bab",
+    "nav.back": "← Bali",
+    "nav.howTo": "Carane dolanan",
+    "btn.newGame": "Main maneh",
+    "btn.newRound": "Ronde anyar",
+    "btn.reset": "Mbaleni",
+    "btn.resetSeries": "Reset skor",
+    "btn.undo": "↶ Batalke",
+    "btn.ready": "Siap",
+    "btn.start": "Miwiti",
+    "btn.cancel": "Batal",
+    "btn.continue": "Terusake",
+    "btn.done": "Rampung",
+    "btn.close": "Tutup",
+    "btn.roll": "🎲 Kocok",
+    "status.turn": "Giliran {name}",
+    "status.winner": "{name} menang!",
+    "status.draw": "Seri.",
+    "pass.toNext": "Kasih HP marang {name}",
+    "pass.private": "Pencet Siap yen HP wis ing tangan dhewe.",
+    "players.count": "{n} pemain",
+    "setup.howMany": "Pira pemaine?",
+    "credit.by": "Digawe dening",
   },
 };
 

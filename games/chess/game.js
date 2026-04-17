@@ -17,6 +17,7 @@ import { storage } from "/shared/storage.js";
 import { register, t } from "/shared/i18n.js";
 import { wireGameHead } from "/shared/game-head.js";
 import { fx } from "/shared/fx.js";
+import { enableDrag } from "/shared/drag.js";
 import { findBestMove } from "./bot.js";
 
 register("ch", {
@@ -1069,6 +1070,14 @@ function doUndo() {
   selectedMoves = [];
   render();
 }
+
+// Drag-and-drop support — reuses tap-to-select logic by firing clicks.
+enableDrag(boardEl, {
+  pieceSelector: ".ch-piece",
+  cellFromPoint: (x, y) => document.elementFromPoint(x, y)?.closest(".ch-sq"),
+  onDragStart: (cell) => cell.click(),
+  onDrop: (cell) => cell.click(),
+});
 
 // Start on setup screen
 turnPill.hidden = true;

@@ -5,6 +5,7 @@
 import { register, t } from "/shared/i18n.js";
 import { wireGameHead } from "/shared/game-head.js";
 import { fx } from "/shared/fx.js";
+import { enableDrag } from "/shared/drag.js";
 
 register("ck", {
   en: {
@@ -261,6 +262,13 @@ document.getElementById("reset").addEventListener("click", () => {
   statusEl.hidden = true;
   start();
   render();
+});
+
+enableDrag(boardEl, {
+  pieceSelector: ".ck-piece",
+  cellFromPoint: (x, y) => document.elementFromPoint(x, y)?.closest(".ck-sq"),
+  onDragStart: (cell) => cell.click(),
+  onDrop: (cell) => cell.click(),
 });
 
 start();

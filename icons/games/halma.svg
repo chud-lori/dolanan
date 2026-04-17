@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Halma">
+  <rect width="64" height="64" rx="14" fill="#f1f5f9"/>
+  <!-- Faint grid -->
+  <g stroke="#cbd5e1" stroke-width="0.6" fill="none">
+    <path d="M8 8 H56 M8 18 H56 M8 28 H56 M8 38 H56 M8 48 H56 M8 56 H56"/>
+    <path d="M8 8 V56 M18 8 V56 M28 8 V56 M38 8 V56 M48 8 V56 M56 8 V56"/>
+  </g>
+  <!-- Red home (bottom-left) -->
+  <g fill="#fecaca">
+    <rect x="8"  y="48" width="10" height="8"/>
+    <rect x="18" y="48" width="10" height="8"/>
+    <rect x="28" y="48" width="10" height="8"/>
+    <rect x="8"  y="38" width="10" height="10"/>
+    <rect x="18" y="38" width="10" height="10"/>
+    <rect x="8"  y="28" width="10" height="10"/>
+  </g>
+  <!-- Blue home (top-right) -->
+  <g fill="#bfdbfe">
+    <rect x="38" y="8"  width="10" height="10"/>
+    <rect x="48" y="8"  width="8"  height="10"/>
+    <rect x="38" y="18" width="10" height="10"/>
+    <rect x="48" y="18" width="8"  height="10"/>
+    <rect x="48" y="28" width="8"  height="10"/>
+  </g>
+  <!-- A red piece and a blue piece on the move -->
+  <circle cx="22" cy="50" r="3.5" fill="#ef4444" stroke="#fff" stroke-width="1"/>
+  <circle cx="42" cy="14" r="3.5" fill="#3b82f6" stroke="#fff" stroke-width="1"/>
+</svg>

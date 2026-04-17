@@ -27,6 +27,7 @@ const GAMES = [
   "dots-and-boxes",
   "truth-or-dare",
   "congklak",
+  "halma",
 ];
 
 const results = [];

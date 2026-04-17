@@ -1,15 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://dolanan.lori.my.id/</loc><priority>1.0</priority></url>
-  <url><loc>https://dolanan.lori.my.id/games/tictactoe/</loc></url>
-  <url><loc>https://dolanan.lori.my.id/games/connect-four/</loc></url>
-  <url><loc>https://dolanan.lori.my.id/games/checkers/</loc></url>
-  <url><loc>https://dolanan.lori.my.id/games/chess/</loc></url>
-  <url><loc>https://dolanan.lori.my.id/games/ludo/</loc></url>
-  <url><loc>https://dolanan.lori.my.id/games/werewolf/</loc></url>
-  <url><loc>https://dolanan.lori.my.id/games/battleship/</loc></url>
-  <url><loc>https://dolanan.lori.my.id/games/hangman/</loc></url>
-  <url><loc>https://dolanan.lori.my.id/games/dots-and-boxes/</loc></url>
-  <url><loc>https://dolanan.lori.my.id/games/truth-or-dare/</loc></url>
-  <url><loc>https://dolanan.lori.my.id/games/congklak/</loc></url>
+  <url><loc>https://dolanan.lori.my.id/</loc><lastmod>2026-04-17</lastmod><priority>1.0</priority></url>
+  <url><loc>https://dolanan.lori.my.id/about/</loc><lastmod>2026-04-17</lastmod><priority>0.6</priority></url>
+  <url><loc>https://dolanan.lori.my.id/games/battleship/</loc><lastmod>2026-04-17</lastmod><priority>0.8</priority></url>
+  <url><loc>https://dolanan.lori.my.id/games/checkers/</loc><lastmod>2026-04-17</lastmod><priority>0.8</priority></url>
+  <url><loc>https://dolanan.lori.my.id/games/chess/</loc><lastmod>2026-04-17</lastmod><priority>0.8</priority></url>
+  <url><loc>https://dolanan.lori.my.id/games/congklak/</loc><lastmod>2026-04-17</lastmod><priority>0.8</priority></url>
+  <url><loc>https://dolanan.lori.my.id/games/connect-four/</loc><lastmod>2026-04-17</lastmod><priority>0.8</priority></url>
+  <url><loc>https://dolanan.lori.my.id/games/dots-and-boxes/</loc><lastmod>2026-04-17</lastmod><priority>0.8</priority></url>
+  <url><loc>https://dolanan.lori.my.id/games/halma/</loc><lastmod>2026-04-17</lastmod><priority>0.8</priority></url>
+  <url><loc>https://dolanan.lori.my.id/games/hangman/</loc><lastmod>2026-04-17</lastmod><priority>0.8</priority></url>
+  <url><loc>https://dolanan.lori.my.id/games/ludo/</loc><lastmod>2026-04-17</lastmod><priority>0.8</priority></url>
+  <url><loc>https://dolanan.lori.my.id/games/tictactoe/</loc><lastmod>2026-04-17</lastmod><priority>0.8</priority></url>
+  <url><loc>https://dolanan.lori.my.id/games/truth-or-dare/</loc><lastmod>2026-04-17</lastmod><priority>0.8</priority></url>
+  <url><loc>https://dolanan.lori.my.id/games/werewolf/</loc><lastmod>2026-04-17</lastmod><priority>0.8</priority></url>
 </urlset>
