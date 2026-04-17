@@ -36,6 +36,18 @@
         </div>
       </header>
 
+      <div class="ch-mode-bar" id="mode-bar">
+        <div class="lang-seg" id="mode-seg" role="tablist" aria-label="Mode">
+          <button type="button" data-mode="human" class="active">2 Players</button>
+          <button type="button" data-mode="bot">vs Bot</button>
+        </div>
+        <select id="difficulty" class="ch-diff-select" hidden>
+          <option value="easy">Easy</option>
+          <option value="medium" selected>Medium</option>
+          <option value="hard">Hard</option>
+        </select>
+      </div>
+
       <div class="board-wrap">
         <div id="board" class="ch-board" aria-label="Chess board"></div>
       </div>

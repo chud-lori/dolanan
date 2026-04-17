@@ -17,6 +17,7 @@ import { storage } from "/shared/storage.js";
 import { register, t } from "/shared/i18n.js";
 import { wireGameHead } from "/shared/game-head.js";
 import { fx } from "/shared/fx.js";
+import { findBestMove } from "./bot.js";
 
 register("ch", {
   en: {
@@ -30,6 +31,12 @@ register("ch", {
     repetition: "Draw — threefold repetition.",
     fiftyMove: "Draw — 50-move rule.",
     promote: "Promote pawn",
+    modeHuman: "2 Players",
+    modeBot: "vs Bot",
+    botThinking: "Bot is thinking…",
+    easy: "Easy",
+    medium: "Medium",
+    hard: "Hard",
   },
   id: {
     subtitle: "2 pemain · aturan lengkap · hotseat",
@@ -42,6 +49,12 @@ register("ch", {
     repetition: "Seri — posisi sama tiga kali.",
     fiftyMove: "Seri — 50 langkah tanpa makan.",
     promote: "Promosi pion",
+    modeHuman: "2 Pemain",
+    modeBot: "vs Bot",
+    botThinking: "Bot sedang berpikir…",
+    easy: "Mudah",
+    medium: "Sedang",
+    hard: "Sulit",
   },
 });
 
@@ -458,6 +471,75 @@ function positionKey(s) {
   return parts.join("|");
 }
 
+// ---- Bot integration ----
+
+// Engine adapter — exposes the functions bot.js needs without exporting them
+// from this module's global scope.
+const engine = {
+  legalMoves(s) {
+    const moves = pseudoMoves(s, s.turn);
+    const legal = [];
+    for (const m of moves) {
+      const saved = new Map(s.positions);
+      applyMove(s, m);
+      const leftKing = isInCheck(s, s.turn === "w" ? "b" : "w");
+      const step = s.history.pop();
+      s.board = step.prev.board;
+      s.turn = step.prev.turn;
+      s.castling = step.prev.castling;
+      s.enPassant = step.prev.enPassant;
+      s.halfmove = step.prev.halfmove;
+      s.result = step.prev.result;
+      s.positions = saved;
+      if (!leftKing) legal.push(m);
+    }
+    return legal;
+  },
+  apply(s, m) { applyMove(s, m); },
+  revert(s) {
+    const step = s.history.pop();
+    s.board = step.prev.board;
+    s.turn = step.prev.turn;
+    s.castling = step.prev.castling;
+    s.enPassant = step.prev.enPassant;
+    s.halfmove = step.prev.halfmove;
+    s.result = step.prev.result;
+    // positions map: we don't restore here since minimax doesn't check repetition
+  },
+  inCheck(s, color) { return isInCheck(s, color); },
+};
+
+let botMode = false;    // false = 2-player, true = vs bot
+let botColor = "b";     // bot plays black
+let botDifficulty = "medium";
+let botBusy = false;
+
+function isBotTurn() {
+  return botMode && state.turn === botColor && !state.result;
+}
+
+async function doBotMove() {
+  if (!isBotTurn()) return;
+  botBusy = true;
+  render();
+  // Small delay so the UI shows "Bot is thinking…" before the CPU-heavy search
+  await new Promise((r) => setTimeout(r, 100));
+  const move = findBestMove(state, engine, botDifficulty);
+  botBusy = false;
+  if (!move) { render(); return; }
+  // Apply the bot's move
+  applyMove(state, move);
+  if (move.captured) { fx.play("capture"); fx.haptic("capture"); }
+  else { fx.play("place"); fx.haptic("tap"); }
+  selected = null;
+  selectedMoves = [];
+  render();
+  if (state.result) {
+    fx.play(state.result.startsWith("½") ? "lose" : "win");
+    fx.haptic("win");
+  }
+}
+
 // ---- Rendering + interaction ----
 
 let selected = null;
@@ -500,7 +582,11 @@ function render() {
   }
 
   const name = (p) => t(p === "w" ? "ch.white" : "ch.black");
-  turnLabel.textContent = state.result ? "—" : t("ch.turn", { p: name(state.turn) });
+  if (botBusy) {
+    turnLabel.textContent = t("ch.botThinking");
+  } else {
+    turnLabel.textContent = state.result ? "—" : t("ch.turn", { p: name(state.turn) });
+  }
   turnDot.className = "turn-dot " + (state.turn === "w" ? "white" : "black");
 
   if (!state.result) {
@@ -535,6 +621,7 @@ document.addEventListener("langchange", () => render());
 function onSquareClick(r, c, legalAll) {
   if (state.result) return;
   if (pendingPromotion) return;
+  if (botBusy || isBotTurn()) return; // block clicks during bot's turn
 
   const p = state.board[r][c];
   if (selected) {
@@ -577,7 +664,11 @@ function performMove(move) {
   selected = null;
   selectedMoves = [];
   render();
-  if (state.result) { fx.play(state.result.startsWith("½") ? "lose" : "win"); fx.haptic("win"); }
+  if (state.result) {
+    fx.play(state.result.startsWith("½") ? "lose" : "win"); fx.haptic("win");
+  } else if (isBotTurn()) {
+    setTimeout(() => doBotMove(), 200);
+  }
 }
 
 function askPromotion(move, promos) {
@@ -606,13 +697,41 @@ function newGame() {
   state = initialState();
   selected = null;
   selectedMoves = [];
+  botBusy = false;
   render();
+  if (isBotTurn()) setTimeout(() => doBotMove(), 300);
 }
+
+// ---- Mode selector ----
+const modeSeg = document.getElementById("mode-seg");
+const diffSelect = document.getElementById("difficulty");
+
+modeSeg.querySelectorAll("button").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    const mode = btn.dataset.mode;
+    botMode = mode === "bot";
+    diffSelect.hidden = !botMode;
+    modeSeg.querySelectorAll("button").forEach((b) => {
+      b.classList.toggle("active", b.dataset.mode === mode);
+    });
+    newGame();
+  });
+});
+
+diffSelect.addEventListener("change", () => {
+  botDifficulty = diffSelect.value;
+  newGame();
+});
 
 document.getElementById("reset").addEventListener("click", newGame);
 document.getElementById("undo").addEventListener("click", () => {
   if (!state.history.length) return;
+  if (botBusy) return;
   undoMove();
+  // In bot mode, undo BOTH the bot's move and the human's previous move
+  if (botMode && state.history.length && state.turn === botColor) {
+    undoMove();
+  }
   selected = null;
   selectedMoves = [];
   render();
