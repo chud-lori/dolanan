@@ -51,7 +51,18 @@ const controlsEl = document.querySelector(".hub-controls");
 mountThemeButton(controlsEl);
 mountMuteButton(controlsEl);
 
-// ---- Install prompt (Android/Chrome) ----
+// ---- Install prompt ----
+// Two paths:
+//   • Chrome / Edge / Android → `beforeinstallprompt` gives us a real prompt.
+//   • iOS Safari → no API exists; show a small overlay explaining Share →
+//     Add to Home Screen. Hide if already running standalone.
+
+const isStandalone =
+  window.matchMedia?.("(display-mode: standalone)").matches ||
+  navigator.standalone === true; // iOS-specific flag
+
+const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+
 let deferredPrompt = null;
 window.addEventListener("beforeinstallprompt", (e) => {
   e.preventDefault();
@@ -59,17 +70,53 @@ window.addEventListener("beforeinstallprompt", (e) => {
   installBtn.hidden = false;
 });
 
+// On iOS the event never fires — show the button anyway (unless already
+// installed), and the click handler will explain the manual flow.
+if (isIOS && !isStandalone) installBtn.hidden = false;
+
 installBtn.addEventListener("click", async () => {
-  if (!deferredPrompt) return;
-  deferredPrompt.prompt();
-  await deferredPrompt.userChoice;
-  deferredPrompt = null;
-  installBtn.hidden = true;
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+    await deferredPrompt.userChoice;
+    deferredPrompt = null;
+    installBtn.hidden = true;
+    return;
+  }
+  if (isIOS) {
+    showIOSInstallHelp();
+    return;
+  }
+  // Any other browser without a prompt — short-circuit quietly.
 });
 
 window.addEventListener("appinstalled", () => {
   installBtn.hidden = true;
 });
+
+function showIOSInstallHelp() {
+  const root = document.createElement("div");
+  root.className = "modal-backdrop";
+  root.innerHTML = `
+    <div class="modal" role="dialog" aria-modal="true" style="max-width: 360px;">
+      <div style="font-size: 48px; line-height: 1; margin-bottom: 8px;">📲</div>
+      <h2 data-i18n="hub.iosInstallTitle">Add to Home Screen</h2>
+      <ol style="text-align: left; padding-left: 20px; line-height: 1.6;">
+        <li data-i18n="hub.iosStep1">Tap the Share button
+          <span style="display:inline-block; vertical-align:-4px; font-size:18px;">⬆︎</span>
+          at the bottom of Safari.</li>
+        <li data-i18n="hub.iosStep2">Scroll and choose <strong>Add to Home Screen</strong>.</li>
+        <li data-i18n="hub.iosStep3">Tap <strong>Add</strong> — Dolanan opens like a native app.</li>
+      </ol>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-primary" data-i18n="btn.close">Close</button>
+      </div>
+    </div>`;
+  document.body.appendChild(root);
+  applyI18n(root);
+  const close = () => root.remove();
+  root.querySelector("button").addEventListener("click", close);
+  root.addEventListener("click", (e) => { if (e.target === root) close(); });
+}
 
 // Register SW + auto-update on every visit.
 registerServiceWorker();
