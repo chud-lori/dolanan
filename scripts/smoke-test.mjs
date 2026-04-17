@@ -26,6 +26,7 @@ const GAMES = [
   "hangman",
   "dots-and-boxes",
   "truth-or-dare",
+  "congklak",
 ];
 
 const results = [];
@@ -175,11 +176,12 @@ async function main() {
       record("dots-and-boxes: edge claim renders", hasOwned);
     }
 
-    // Chess: open, move a pawn (e2→e4), confirm turn flips to black
+    // Chess: dismiss setup, move a pawn (e2→e4), confirm turn flips to black
     {
       await page.goto(`${BASE}/games/chess/`);
       await page.waitForLoadState("networkidle");
-      // Square at (6, 4) is white pawn e2. (4, 4) is e4.
+      await page.click('[data-mode="human"]'); // dismiss setup screen
+      await page.waitForSelector(".ch-sq");
       const idx = (r, c) => r * 8 + c;
       await page.locator(".ch-sq").nth(idx(6, 4)).click();
       await page.locator(".ch-sq").nth(idx(4, 4)).click();
@@ -298,6 +300,8 @@ async function main() {
     {
       await page.goto(`${BASE}/games/chess/`);
       await page.waitForLoadState("networkidle");
+      await page.click('[data-mode="human"]');
+      await page.waitForSelector("#reset");
       // setLang stored as "id" from previous test; verify it applied
       const title = (await page.textContent(".game-title"))?.trim();
       const newGameBtn = (await page.textContent("#reset"))?.trim();

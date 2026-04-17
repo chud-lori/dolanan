@@ -74,7 +74,6 @@ dolanan/
 │   ├── storage.js             # namespaced localStorage wrapper
 │   ├── board.js               # grid helpers (tic-tac-toe, c4, etc.)
 │   ├── dice.js                # dice tumble + bounce animation
-│   ├── pass.js                # "pass the device" modal helper
 │   └── ui.css                 # shared in-game UI (boards, pills, modals)
 ├── games/
 │   ├── tictactoe/             # each game has its own index.html + game.js + game.css

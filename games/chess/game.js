@@ -517,6 +517,10 @@ let botMode = false;    // false = 2-player, true = vs bot
 let botColor = "b";     // bot plays black
 let botDifficulty = "medium";
 let botBusy = false;
+// Bumped on every newGame / backToSetup. doBotMove() captures this at entry;
+// if it changes during the async search, the move is discarded — prevents
+// the bot from applying a stale move to a fresh board.
+let gameGen = 0;
 
 function isBotTurn() {
   return botMode && state.turn === botColor && !state.result;
@@ -524,11 +528,17 @@ function isBotTurn() {
 
 async function doBotMove() {
   if (!isBotTurn()) return;
+  const myGen = gameGen;
   botBusy = true;
   render();
   // Small delay so the UI shows "Bot is thinking…" before the CPU-heavy search
   await new Promise((r) => setTimeout(r, 100));
+  // Abort if the game was reset while we were waiting.
+  if (myGen !== gameGen) { botBusy = false; return; }
   const move = findBestMove(state, engine, botDifficulty);
+  // Abort again in case the game reset during the (synchronous but CPU-heavy)
+  // search — the user might have tapped "New game" just before we returned.
+  if (myGen !== gameGen) { botBusy = false; return; }
   botBusy = false;
   if (!move) { render(); return; }
   // Apply the bot's move
@@ -704,6 +714,7 @@ const diffSeg = document.getElementById("diff-seg");
 const turnPill = document.getElementById("turn-pill");
 
 function startGame(mode) {
+  gameGen++;
   botMode = mode === "bot";
   // botDifficulty is set by the difficulty segmented toggle handler; default
   // to "medium" if never touched.
@@ -720,6 +731,8 @@ function startGame(mode) {
 }
 
 function backToSetup() {
+  gameGen++;            // invalidate any in-flight bot search
+  botBusy = false;
   setupEl.hidden = false;
   playEl.hidden = true;
   turnPill.hidden = true;

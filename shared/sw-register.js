@@ -18,9 +18,20 @@ export function registerServiceWorker() {
   wired = true;
   if (!("serviceWorker" in navigator)) return;
 
+  // `controllerchange` fires in two cases:
+  //   (a) A brand-new page with no prior controller gets one for the first
+  //       time (initial install / first load after cache miss). We do NOT
+  //       want to reload here — the page is already showing fresh content.
+  //   (b) An existing controlled page gets a NEW version taking over. This
+  //       is the real "new deploy" case and we DO want to reload.
+  // We distinguish them by snapshotting `navigator.serviceWorker.controller`
+  // at registration time. If it was non-null and a changeover fires, we're
+  // in case (b).
+  const hadController = !!navigator.serviceWorker.controller;
   let reloading = false;
   navigator.serviceWorker.addEventListener("controllerchange", () => {
     if (reloading) return;
+    if (!hadController) return; // first-time control — don't reload
     reloading = true;
     location.reload();
   });
