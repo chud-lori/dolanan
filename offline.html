@@ -5,6 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#3b82f6" />
     <title>Offline — Dolanan</title>
+    <script>
+      (function () {
+        try {
+          var v = localStorage.getItem("dolanan:theme");
+          var d = v && JSON.parse(v) === "dark";
+          document.documentElement.setAttribute("data-theme", d ? "dark" : "light");
+        } catch (e) {
+          document.documentElement.setAttribute("data-theme", "light");
+        }
+      })();
+    </script>
     <link rel="stylesheet" href="/style.css" />
     <style>
       .offline-shell {

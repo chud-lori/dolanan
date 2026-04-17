@@ -16,6 +16,17 @@
     <link rel="icon" href="/icons/favicon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
     <link rel="manifest" href="/manifest.webmanifest" />
+    <script>
+      (function () {
+        try {
+          var v = localStorage.getItem("dolanan:theme");
+          var d = v && JSON.parse(v) === "dark";
+          document.documentElement.setAttribute("data-theme", d ? "dark" : "light");
+        } catch (e) {
+          document.documentElement.setAttribute("data-theme", "light");
+        }
+      })();
+    </script>
     <link rel="stylesheet" href="/style.css" />
     <link rel="stylesheet" href="/shared/ui.css" />
     <link rel="stylesheet" href="./game.css" />
