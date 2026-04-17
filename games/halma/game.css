@@ -10,7 +10,9 @@
   box-shadow: var(--shadow);
   overflow: hidden;
   user-select: none;
-  touch-action: manipulation;
+  /* `none` (not `manipulation`) so a touch-drag on a piece doesn't scroll the
+     page — required for the shared drag-and-drop helper to fire pointermove. */
+  touch-action: none;
 }
 
 .hl-cell {

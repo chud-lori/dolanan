@@ -16,6 +16,7 @@
 import { register, t } from "/shared/i18n.js";
 import { wireGameHead } from "/shared/game-head.js";
 import { fx } from "/shared/fx.js";
+import { enableDrag } from "/shared/drag.js";
 
 register("hl", {
   en: {
@@ -315,5 +316,14 @@ endJumpBtn.addEventListener("click", () => {
 
 document.getElementById("reset").addEventListener("click", newGame);
 document.addEventListener("langchange", render);
+
+// Drag-and-drop — reuses the click handlers via cell.click() so all the
+// turn / jump-chain logic stays in one place.
+enableDrag(boardEl, {
+  pieceSelector: ".hl-piece",
+  cellFromPoint: (x, y) => document.elementFromPoint(x, y)?.closest(".hl-cell"),
+  onDragStart: (cell) => cell.click(),
+  onDrop: (cell) => cell.click(),
+});
 
 newGame();

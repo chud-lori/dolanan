@@ -9,7 +9,10 @@
   box-shadow: var(--shadow);
   overflow: hidden;
   user-select: none;
-  touch-action: manipulation;
+  /* `none` (not `manipulation`) so a touch-drag on a piece doesn't get
+     interpreted as a page scroll — needed for drag-and-drop to receive
+     pointermove events on iOS. */
+  touch-action: none;
 }
 
 .ch-sq {
