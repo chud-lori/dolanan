@@ -31,9 +31,11 @@ register("ch", {
     repetition: "Draw — threefold repetition.",
     fiftyMove: "Draw — 50-move rule.",
     promote: "Promote pawn",
+    chooseMode: "Choose mode",
     modeHuman: "2 Players",
     modeBot: "vs Bot",
     botThinking: "Bot is thinking…",
+    difficulty: "Difficulty",
     easy: "Easy",
     medium: "Medium",
     hard: "Hard",
@@ -49,9 +51,11 @@ register("ch", {
     repetition: "Seri — posisi sama tiga kali.",
     fiftyMove: "Seri — 50 langkah tanpa makan.",
     promote: "Promosi pion",
+    chooseMode: "Pilih mode",
     modeHuman: "2 Pemain",
     modeBot: "vs Bot",
     botThinking: "Bot sedang berpikir…",
+    difficulty: "Tingkat kesulitan",
     easy: "Mudah",
     medium: "Sedang",
     hard: "Sulit",
@@ -693,42 +697,60 @@ function askPromotion(move, promos) {
   promoEl.hidden = false;
 }
 
-function newGame() {
+const setupEl = document.getElementById("ch-setup");
+const playEl = document.getElementById("ch-play");
+const diffRow = document.getElementById("diff-row");
+const diffSeg = document.getElementById("diff-seg");
+const turnPill = document.getElementById("turn-pill");
+
+function startGame(mode) {
+  botMode = mode === "bot";
+  botDifficulty = diffSelect.value;
+  botBusy = false;
   state = initialState();
   selected = null;
   selectedMoves = [];
-  botBusy = false;
+  setupEl.hidden = true;
+  playEl.hidden = false;
+  turnPill.hidden = false;
   render();
   if (isBotTurn()) setTimeout(() => doBotMove(), 300);
 }
 
-// ---- Mode selector ----
-const modeSeg = document.getElementById("mode-seg");
-const diffSelect = document.getElementById("difficulty");
+function backToSetup() {
+  setupEl.hidden = false;
+  playEl.hidden = true;
+  turnPill.hidden = true;
+  statusEl.hidden = true;
+}
 
-modeSeg.querySelectorAll("button").forEach((btn) => {
+// Setup buttons
+setupEl.querySelector('[data-mode="human"]').addEventListener("click", () => {
+  startGame("human");
+});
+
+// "vs Bot" reveals the difficulty picker; "Start" actually begins.
+document.getElementById("btn-pick-bot").addEventListener("click", () => {
+  diffRow.hidden = false;
+});
+
+diffSeg.querySelectorAll("[data-diff]").forEach((btn) => {
   btn.addEventListener("click", () => {
-    const mode = btn.dataset.mode;
-    botMode = mode === "bot";
-    diffSelect.hidden = !botMode;
-    modeSeg.querySelectorAll("button").forEach((b) => {
-      b.classList.toggle("active", b.dataset.mode === mode);
-    });
-    newGame();
+    botDifficulty = btn.dataset.diff;
+    diffSeg.querySelectorAll("[data-diff]").forEach((b) =>
+      b.classList.toggle("active", b === btn));
   });
 });
 
-diffSelect.addEventListener("change", () => {
-  botDifficulty = diffSelect.value;
-  newGame();
+document.getElementById("btn-start-bot").addEventListener("click", () => {
+  startGame("bot");
 });
 
-document.getElementById("reset").addEventListener("click", newGame);
+document.getElementById("reset").addEventListener("click", backToSetup);
 document.getElementById("undo").addEventListener("click", () => {
   if (!state.history.length) return;
   if (botBusy) return;
   undoMove();
-  // In bot mode, undo BOTH the bot's move and the human's previous move
   if (botMode && state.history.length && state.turn === botColor) {
     undoMove();
   }
@@ -737,4 +759,5 @@ document.getElementById("undo").addEventListener("click", () => {
   render();
 });
 
-newGame();
+// Start on setup screen
+turnPill.hidden = true;

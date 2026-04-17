@@ -9,10 +9,11 @@ function systemPrefersDark() {
   return window.matchMedia("(prefers-color-scheme: dark)").matches;
 }
 
-// First visit: follow the device. After that, use the stored choice.
+// First visit: default to LIGHT regardless of system. User can toggle to dark.
+// After that, use their stored choice.
 let dark = storage.get(KEY) != null
   ? storage.get(KEY) === "dark"
-  : systemPrefersDark();
+  : false;
 
 function apply() {
   document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");

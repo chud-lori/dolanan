@@ -8,9 +8,19 @@
 .hub-controls {
   display: flex;
   justify-content: center;
-  gap: 8px;
+  align-items: center;
+  gap: 6px;
   margin: 8px 0 24px;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+}
+
+/* Keep install button from stretching on longer translations */
+#install-btn {
+  white-space: nowrap;
+  flex-shrink: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 #games-heading {

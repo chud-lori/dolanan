@@ -116,12 +116,12 @@ body {
     calc(max(24px, env(safe-area-inset-bottom)) + 32px);
 }
 
-/* Game pages aim for a no-scroll, one-screen layout on phones. */
+/* Game pages: tight padding, no footer — game fills naturally. */
 body.game {
   padding-top: max(4px, env(safe-area-inset-top));
-  padding-bottom: max(8px, env(safe-area-inset-bottom));
-  padding-left: clamp(8px, 3vw, 20px);
-  padding-right: clamp(8px, 3vw, 20px);
+  padding-bottom: max(4px, env(safe-area-inset-bottom));
+  padding-left: clamp(6px, 2.5vw, 16px);
+  padding-right: clamp(6px, 2.5vw, 16px);
 }
 
 /* Prevent accidental text selection during gameplay, but keep inputs selectable. */

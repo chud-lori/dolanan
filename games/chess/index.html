@@ -36,27 +36,39 @@
         </div>
       </header>
 
-      <div class="ch-mode-bar" id="mode-bar">
-        <div class="lang-seg" id="mode-seg" role="tablist" aria-label="Mode">
-          <button type="button" data-mode="human" class="active">2 Players</button>
-          <button type="button" data-mode="bot">vs Bot</button>
+      <!-- Setup: choose mode before game starts -->
+      <div id="ch-setup" class="card" style="text-align: center;">
+        <h2 data-i18n="ch.chooseMode">Choose mode</h2>
+        <div class="row" style="justify-content: center; margin: 16px 0;">
+          <button type="button" class="btn btn-primary" data-mode="human" style="min-width: 120px;">
+            👥 <span data-i18n="ch.modeHuman">2 Players</span>
+          </button>
+          <button type="button" class="btn btn-secondary" id="btn-pick-bot" style="min-width: 120px;">
+            🤖 <span data-i18n="ch.modeBot">vs Bot</span>
+          </button>
         </div>
-        <select id="difficulty" class="ch-diff-select" hidden>
-          <option value="easy">Easy</option>
-          <option value="medium" selected>Medium</option>
-          <option value="hard">Hard</option>
-        </select>
+        <div id="diff-row" hidden style="margin-top: 12px;">
+          <div class="lang-seg" id="diff-seg" style="margin-bottom: 12px;">
+            <button type="button" data-diff="easy">Easy</button>
+            <button type="button" data-diff="medium" class="active">Medium</button>
+            <button type="button" data-diff="hard">Hard</button>
+          </div>
+          <button type="button" class="btn btn-primary" id="btn-start-bot" style="width: 100%;" data-i18n="btn.start">Start</button>
+        </div>
       </div>
 
-      <div class="board-wrap">
-        <div id="board" class="ch-board" aria-label="Chess board"></div>
-      </div>
+      <!-- Game area: hidden until mode is chosen -->
+      <div id="ch-play" hidden>
+        <div class="board-wrap">
+          <div id="board" class="ch-board" aria-label="Chess board"></div>
+        </div>
 
-      <div id="status" class="status-banner" hidden></div>
+        <div id="status" class="status-banner" hidden></div>
 
-      <div class="row" style="justify-content: center; margin-top: 16px;">
-        <button id="undo" type="button" class="btn btn-secondary" data-i18n="btn.undo">↶ Undo</button>
-        <button id="reset" type="button" class="btn btn-primary" data-i18n="btn.newGame">New game</button>
+        <div class="row" style="justify-content: center; margin-top: 12px;">
+          <button id="undo" type="button" class="btn btn-secondary" data-i18n="btn.undo">↶ Undo</button>
+          <button id="reset" type="button" class="btn btn-ghost" data-i18n="btn.newGame">New game</button>
+        </div>
       </div>
     </main>
 
@@ -67,9 +79,5 @@
       </div>
     </div>
 
-    <footer class="app-footer">
-      <span data-i18n="credit.by">Created by</span>
-      <a href="https://profile.lori.my.id" rel="noopener">Lori</a>
-    </footer>
   </body>
 </html>
