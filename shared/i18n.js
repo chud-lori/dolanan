@@ -7,6 +7,24 @@ import { storage } from "./storage.js";
 const DEFAULT = "en";
 const SUPPORTED = ["en", "id", "jw"];
 
+// Resolution order when a key is missing in the active language.
+// Javanese speakers understand Indonesian, so jw → id → en is a better fallback
+// than jumping straight to English.
+const LANG_FALLBACK = {
+  jw: "id",
+};
+
+function langChain(lang) {
+  const chain = [lang];
+  let cur = LANG_FALLBACK[lang];
+  while (cur && !chain.includes(cur)) {
+    chain.push(cur);
+    cur = LANG_FALLBACK[cur];
+  }
+  if (!chain.includes(DEFAULT)) chain.push(DEFAULT);
+  return chain;
+}
+
 // Shared "common" scope — used by hub + every game.
 const COMMON = {
   en: {
@@ -168,15 +186,25 @@ export function t(key, vars = {}) {
     scope = key.slice(0, dot);
     k = key.slice(dot + 1);
   }
-  const raw =
-    resolveKey(scope, k, current) ||
-    resolveKey("common", key, current) ||
-    resolveKey("common", k, current) ||
-    resolveKey(scope, k, DEFAULT) ||
-    resolveKey("common", key, DEFAULT) ||
-    resolveKey("common", k, DEFAULT) ||
-    key;
+  let raw = key;
+  for (const lang of langChain(current)) {
+    const v =
+      resolveKey(scope, k, lang) ||
+      resolveKey("common", key, lang) ||
+      resolveKey("common", k, lang);
+    if (v) { raw = v; break; }
+  }
   return raw.replace(/\{(\w+)\}/g, (_, v) => (vars[v] != null ? vars[v] : ""));
+}
+
+/** Pick the best-matching value from a {en, id, jw, ...} dictionary
+ *  using the active language's fallback chain. */
+export function pickLocalized(dict) {
+  if (!dict) return "";
+  for (const lang of langChain(current)) {
+    if (dict[lang]) return dict[lang];
+  }
+  return dict.en || "";
 }
 
 /**
@@ -190,6 +218,7 @@ export function applyI18n(root = document) {
     const attr = el.dataset.i18nAttr;
     const val = t(key);
     if (attr) el.setAttribute(attr, val);
+    else if (el.hasAttribute("data-i18n-html")) el.innerHTML = val;
     else el.textContent = val;
   });
 }

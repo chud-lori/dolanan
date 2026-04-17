@@ -39,11 +39,27 @@ register("td", {
     truth: "Jujur",
     dare: "Berani",
   },
+  jw: {
+    subtitle: "2+ pemain · tantangan estafet",
+    setupTitle: "Pemain",
+    addPlayer: "+ Tambah pemain",
+    start: "Miwiti",
+    minPlayers: "Kudu paling sithik 2 pemain.",
+    current: "Giliran {name}",
+    pickTruth: "Jujur",
+    pickDare: "Wani",
+    next: "Oper menyang sabanjure",
+    random: "Acak",
+    tooShort: "Isi jeneng",
+    truth: "Jujur",
+    dare: "Wani",
+  },
 });
 
 wireGameHead({
   titleEn: "Truth or Dare",
   titleId: "Jujur atau Berani",
+  titleJw: "Jujur utawa Wani",
   subtitleKey: "td.subtitle",
   rules: {
     en: `
@@ -64,6 +80,15 @@ wireGameHead({
         <li>Tekan <em>Kasih ke berikutnya</em> dan oper HP ke pemain selanjutnya.</li>
       </ul>
       <p>Semua tantangan aman dan bersahabat. Ganti bahasa untuk tukar daftar tantangan ID ↔ EN.</p>`,
+    jw: `
+      <h3>Carane dolanan</h3>
+      <ul>
+        <li>Isi jeneng pemain banjur pencet Miwiti.</li>
+        <li>Pas giliranmu, pilih <strong>Jujur</strong>, <strong>Wani</strong>, utawa <strong>Acak</strong>.</li>
+        <li>Waca tantangane lan jawab / lakokna.</li>
+        <li>Pencet <em>Oper menyang sabanjure</em> lan kekno HP menyang pemain sabanjure.</li>
+      </ul>
+      <p>Kabeh tantangan aman lan ramah. Ganti basa kanggo ngganti dhaptar tantangan ID ↔ EN.</p>`,
   },
 });
 
@@ -79,7 +104,8 @@ const state = {
 
 function pickPrompt(kind) {
   const lang = getLang();
-  const pool = PROMPTS[lang][kind];
+  // Prompts only ship EN + ID — Javanese falls back to Indonesian.
+  const pool = (PROMPTS[lang] || PROMPTS.id)[kind];
   const recent = storage.get(RECENT_KEY, []);
   const fresh = pool.filter((p) => !recent.includes(p));
   const candidates = fresh.length ? fresh : pool;

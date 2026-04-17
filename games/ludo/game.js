@@ -46,11 +46,25 @@ register("lu", {
     hintSix: "Dapat 6 — kocok lagi!",
     hintCapture: "Makan lawan! Kocok lagi.",
   },
+  jw: {
+    subtitle: "2–4 pemain · kocok 6 kanggo metu · balapan mulih",
+    red: "Abang", green: "Ijo", yellow: "Kuning", blue: "Biru",
+    turn: "Giliran {p}",
+    win: "{p} menang!",
+    hintTap: "Pencet Kocok kanggo miwiti.",
+    hintPick: "Entuk {n} — pilih bidak sing arep dipindhah.",
+    hintNoMove6: "Ora isa mlaku. Kocok maneh giliran ngarep.",
+    hintNoMove: "Entuk {n} — ora ana sing isa mlaku.",
+    hintForfeit: "Ping telu 6 — giliran ilang.",
+    hintSix: "Entuk 6 — kocok maneh!",
+    hintCapture: "Mangan lawan! Kocok maneh.",
+  },
 });
 
 wireGameHead({
   titleEn: "Ludo",
   titleId: "Ludo",
+  titleJw: "Ludo",
   subtitleKey: "lu.subtitle",
   rules: {
     en: `
@@ -94,6 +108,27 @@ wireGameHead({
         <li>Dapat 6 → kocok lagi.</li>
         <li>Makan lawan → kocok lagi.</li>
         <li>Tiga kali 6 berturut → giliran hangus.</li>
+      </ul>`,
+    jw: `
+      <h3>Tujuan</h3>
+      <p>Gawa kabeh bidakmu papat ngubengi papan tekan tengah dhisik.</p>
+      <h3>Gerakan</h3>
+      <ul>
+        <li>Kocok <strong>6</strong> kanggo ngetokake bidak saka home base.</li>
+        <li>Bidak mlaku ngubengi jarum jam ing 52 kothak track, banjur mlebu jalur werna dhewe menyang tengah.</li>
+        <li>Kudu entuk angka pas kanggo tekan finish.</li>
+      </ul>
+      <h3>Mangan lan aman</h3>
+      <ul>
+        <li>Mudhun ing kothak bidak lawan = lawan bali menyang home base.</li>
+        <li><strong>Kothak aman</strong> (entry + lintang) ora isa dipangan.</li>
+        <li>Loro bidak werna padha ora isa ing kothak padha.</li>
+      </ul>
+      <h3>Bonus kocok</h3>
+      <ul>
+        <li>Entuk 6 → kocok maneh.</li>
+        <li>Mangan lawan → kocok maneh.</li>
+        <li>Ping telu 6 turutan → giliran ilang.</li>
       </ul>`,
   },
 });

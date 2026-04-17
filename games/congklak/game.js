@@ -49,11 +49,24 @@ register("cg", {
     capture: "Tembak!",
     extraTurn: "Masuk rumah — giliran lagi!",
   },
+  jw: {
+    subtitle: "2 pemain · dolanan dakon tradisional",
+    p1: "Pemain 1 (ngisor)",
+    p2: "Pemain 2 (ndhuwur)",
+    turn: "Giliran {p}",
+    win: "{p} menang!",
+    tie: "Seri!",
+    pickPit: "Pilih bolongan kanggo ditabur.",
+    relay: "Terus nabur!",
+    capture: "Tembak!",
+    extraTurn: "Mlebu omah — giliran maneh!",
+  },
 });
 
 wireGameHead({
   titleEn: "Congklak",
   titleId: "Congklak",
+  titleJw: "Dakon",
   subtitleKey: "cg.subtitle",
   rules: {
     en: `
@@ -90,6 +103,23 @@ wireGameHead({
       <p>Kalau biji terakhir masuk <strong>rumahmu sendiri</strong>, kamu dapat giliran lagi.</p>
       <h3>Akhir</h3>
       <p>Saat satu sisi kosong, lawan kumpulkan sisa biji sisinya. Biji terbanyak di rumah menang.</p>`,
+    jw: `
+      <h3>Papan</h3>
+      <p>7 bolongan saben sisi, 1 omah ing saben ujung. Wiwitane: 7 wiji saben bolongan.</p>
+      <h3>Giliranmu</h3>
+      <ol>
+        <li>Pilih siji bolongan duwekmu (kudu ana wiji).</li>
+        <li>Jupuk kabeh wiji, delehake siji-siji ngubengi jarum jam.</li>
+        <li><strong>Lewati</strong> omah lawan — aja ndelehake wiji ing kono.</li>
+      </ol>
+      <h3>Tabur rambatan</h3>
+      <p>Yen wiji pungkasanmu tiba ing bolongan sing wis isi, jupuk KABEH wiji saka bolongan iku banjur terus nabur. Rantai iki nyambung nganti wiji pungkasan tiba ing bolongan kosong utawa omahmu.</p>
+      <h3>Tembak</h3>
+      <p>Yen wiji pungkasan tiba ing <strong>bolongan kosong ing sisimu</strong>, kowe tembak: jupuk wiji kuwi + kabeh wiji saka <strong>bolongan ing ngarepe</strong> (sisi lawan). Kabeh mlebu omahmu.</p>
+      <h3>Giliran bonus</h3>
+      <p>Yen wiji pungkasan mlebu <strong>omahmu dhewe</strong>, kowe entuk giliran maneh.</p>
+      <h3>Pungkasan</h3>
+      <p>Yen salah siji sisi kosong, lawan nglumpukake sisa wiji sisine. Wiji paling akeh ing omah menang.</p>`,
   },
 });
 

@@ -2,16 +2,16 @@
 // module injects a "?" button into the game header that opens a centered
 // modal on tap. No dependency besides i18n.
 
-import { t, getLang } from "./i18n.js";
+import { t, pickLocalized } from "./i18n.js";
 
-let current = null; // { en, id }
+let current = null; // { en, id, jw? }
 let modal = null;
-let titleLabel = { en: "How to play", id: "Cara main" };
+let titleLabel = { en: "How to play", id: "Cara main", jw: "Carane dolanan" };
 
 /** Register the game's rules (HTML strings) and optional button label. */
-export function setRules({ en, id }, labels = {}) {
-  current = { en, id };
-  if (labels.en || labels.id) titleLabel = { ...titleLabel, ...labels };
+export function setRules(rules, labels = {}) {
+  current = { ...rules };
+  if (labels.en || labels.id || labels.jw) titleLabel = { ...titleLabel, ...labels };
 }
 
 export function mountHowToButton(container) {
@@ -20,13 +20,11 @@ export function mountHowToButton(container) {
   btn.type = "button";
   btn.className = "btn btn-secondary howto-btn";
   btn.textContent = "?";
-  btn.setAttribute("aria-label",
-    getLang() === "id" ? titleLabel.id : titleLabel.en);
+  btn.setAttribute("aria-label", pickLocalized(titleLabel));
   btn.addEventListener("click", open);
   container.appendChild(btn);
   document.addEventListener("langchange", () => {
-    btn.setAttribute("aria-label",
-      getLang() === "id" ? titleLabel.id : titleLabel.en);
+    btn.setAttribute("aria-label", pickLocalized(titleLabel));
   });
   return btn;
 }
@@ -36,8 +34,8 @@ function open() {
   close(); // just in case
   modal = document.createElement("div");
   modal.className = "modal-backdrop howto-modal";
-  const body = getLang() === "id" ? current.id : current.en;
-  const heading = getLang() === "id" ? titleLabel.id : titleLabel.en;
+  const body = pickLocalized(current);
+  const heading = pickLocalized(titleLabel);
   const closeLabel = t("btn.close");
   modal.innerHTML = `
     <div class="modal howto-card" role="dialog" aria-modal="true">

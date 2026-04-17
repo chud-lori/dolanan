@@ -64,11 +64,39 @@ register("bs", {
     allPlaced: "Armada siap",
     done: "Selesai",
   },
+  jw: {
+    subtitle: "2 pemain · estafet · ndhelikake armada",
+    p1: "Pemain 1",
+    p2: "Pemain 2",
+    placingFleet: "{p} — delehake kapalmu",
+    placingShip: "Pasang: {name} ({len})",
+    rotate: "Puter",
+    undo: "Batalke",
+    ready: "Siap",
+    pass: "Kasih HP marang {p}",
+    tapPrivately: "Pencet yen HP wis ing tanganmu.",
+    tapReady: "Pencet yen wis siap",
+    yourTurn: "{p} — giliranmu nyerang",
+    hit: "Kena!",
+    miss: "Luput.",
+    sunkShip: "Kapal {name} kleleb!",
+    yourBoard: "Papanmu",
+    enemyBoard: "Papan lawan",
+    win: "{p} menang!",
+    shipCarrier: "Kapal Induk",
+    shipBattleship: "Kapal Perang",
+    shipCruiser: "Panjelajah",
+    shipSubmarine: "Kapal Selam",
+    shipDestroyer: "Ngrusak",
+    allPlaced: "Armada siap",
+    done: "Rampung",
+  },
 });
 
 wireGameHead({
   titleEn: "Battleship",
   titleId: "Kapal Perang",
+  titleJw: "Kapal Perang",
   subtitleKey: "bs.subtitle",
   rules: {
     en: `
@@ -100,6 +128,21 @@ wireGameHead({
         <li>Tap kotak di papan lawan. Kena, meleset, atau tenggelam — hasilnya muncul.</li>
         <li>Oper HP tiap giliran biar tidak ada yang lihat papan lawan.</li>
         <li>Yang menenggelamkan semua kapal duluan menang.</li>
+      </ul>`,
+    jw: `
+      <h3>Tujuan</h3>
+      <p>Klelebake kabeh armada lawan dhisik.</p>
+      <h3>Fase masang</h3>
+      <ul>
+        <li>Saben pemain masang 5 kapal ing papan 10×10: Kapal Induk (5), Kapal Perang (4), Panjelajah (3), Kapal Selam (3), Ngrusak (2).</li>
+        <li>Pencet kothak kanggo ndelehake kapal; <em>Puter</em> kanggo ngganti arah.</li>
+        <li>Oper HP — lawan gantian masang.</li>
+      </ul>
+      <h3>Fase nyerang</h3>
+      <ul>
+        <li>Pencet kothak ing papan lawan. Kena, luput, utawa kleleb — asile katon.</li>
+        <li>Oper HP saben giliran ben ora ana sing weruh papan lawan.</li>
+        <li>Sing ngelembake kabeh kapal dhisik menang.</li>
       </ul>`,
   },
 });

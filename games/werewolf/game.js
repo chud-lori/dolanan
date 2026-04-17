@@ -97,11 +97,55 @@ register("ww", {
     playAgain: "Main lagi",
     defaultName: "Pemain {n}",
   },
+  jw: {
+    subtitle: "5+ pemain · moderator oper HP",
+    setupTitle: "Pengaturan",
+    totalPlayers: "Cacah pemain",
+    werewolves: "Cacah serigala",
+    includeSeer: "Nganggo Peramal",
+    includeDoctor: "Nganggo Dokter",
+    names: "Jeneng pemain",
+    start: "Miwiti",
+    minPlayers: "Paling sithik 5 pemain.",
+    tooManyWolves: "Warga kudu luwih akeh tinimbang serigala.",
+    ready: "Siap!",
+    pass: "Kasih HP marang {name}",
+    tapReveal: "Pencet kanggo weruh peranmu",
+    tapPrivately: "Pencet yen HP wis ing tanganmu.",
+    yourRole: "Kowe iku",
+    role_villager: "Warga",
+    role_werewolf: "Serigala",
+    role_seer: "Peramal",
+    role_doctor: "Dokter",
+    desc_villager: "Ora duwe kekuwatan khusus — buwang serigala liwat voting awan.",
+    desc_werewolf: "Saben bengi, pilih siji korban. Pas awan, pura-pura dadi warga biasa.",
+    desc_seer: "Saben bengi, intip siji pemain kanggo ngerti perane.",
+    desc_doctor: "Saben bengi, njaga siji pemain saka serangan serigala.",
+    gotIt: "Ngerti — oper HP",
+    night: "Bengi teka",
+    nightClose: "Kabeh: tutup mripat.",
+    wolvesPick: "Serigala — pilih korban",
+    seerPick: "Peramal — pilih pemain sing arep diintip",
+    seerResult: "Pemain kuwi jebul {role}.",
+    doctorPick: "Dokter — pilih pemain sing arep dijaga",
+    day: "Esuk teka",
+    deaths: "Korban bengi iki",
+    noDeaths: "Kabeh slamet bengi iki.",
+    voting: "Voting awan",
+    voteHint: "Pilih pemain kanggo dibuwang (utawa dilewati).",
+    skipVote: "Lewati voting",
+    eliminated: "{name} jebul {role}.",
+    winVillagers: "Warga menang!",
+    winWerewolves: "Serigala menang!",
+    playAgain: "Dolanan maneh",
+    defaultName: "Pemain {n}",
+  },
 });
 
 wireGameHead({
   titleEn: "Werewolf",
   titleId: "Werewolf",
+  titleJw: "Werewolf",
   subtitleKey: "ww.subtitle",
   rules: {
     en: `
@@ -155,6 +199,32 @@ wireGameHead({
       <ul>
         <li><strong>Warga</strong> menang kalau semua serigala mati.</li>
         <li><strong>Serigala</strong> menang kalau jumlah mereka ≥ warga yang masih hidup.</li>
+      </ul>`,
+    jw: `
+      <h3>Pengaturan</h3>
+      <ul>
+        <li>5+ pemain. Siji wong dadi moderator lan nyekel HP.</li>
+        <li>Pilih cacah serigala lan opsi Peramal + Dokter.</li>
+        <li>Isi jeneng kabeh pemain (autosuggest saka ronde sadurunge).</li>
+      </ul>
+      <h3>Peran</h3>
+      <ul>
+        <li><strong>Warga</strong> — ora duwe kekuwatan; buwang serigala liwat voting awan.</li>
+        <li><strong>Serigala</strong> — pilih korban saben bengi. Pas awan, pura-pura dadi warga.</li>
+        <li><strong>Peramal</strong> — saben bengi, intip siji pemain kanggo ngerti perane.</li>
+        <li><strong>Dokter</strong> — saben bengi, njaga siji pemain saka serangan serigala.</li>
+      </ul>
+      <h3>Alur</h3>
+      <ol>
+        <li>Reveal estafet: saben pemain ndeleng perane dhewe-dhewe.</li>
+        <li><em>Bengi</em>: moderator mlakokake serigala → peramal → dokter.</li>
+        <li><em>Awan</em>: diskusi + voting buwang siji pemain.</li>
+        <li>Baleni nganti salah siji tim menang.</li>
+      </ol>
+      <h3>Syarat menang</h3>
+      <ul>
+        <li><strong>Warga</strong> menang yen kabeh serigala wis mati.</li>
+        <li><strong>Serigala</strong> menang yen cacahe ≥ warga sing isih urip.</li>
       </ul>`,
   },
 });

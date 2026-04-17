@@ -21,11 +21,19 @@ register("ttt", {
     draw: "Seri.",
     draws: "Seri",
   },
+  jw: {
+    subtitle: "2 pemain · telu sebaris dhisik",
+    turn: "Giliran {p}",
+    win: "{p} menang!",
+    draw: "Seri.",
+    draws: "Seri",
+  },
 });
 
 wireGameHead({
   titleEn: "Tic-Tac-Toe",
   titleId: "Tik-Tak-Toe",
+  titleJw: "Tik-Tak-Toe",
   subtitleKey: "ttt.subtitle",
   rules: {
     en: `
@@ -46,6 +54,15 @@ wireGameHead({
         <li>X main duluan. Gantian tap kotak kosong.</li>
         <li>Kalau papan penuh tanpa tiga sebaris — seri.</li>
         <li>Skor ronde disimpan otomatis.</li>
+      </ul>`,
+    jw: `
+      <h3>Tujuan</h3>
+      <p>Dhisiki ngurutake tandhane telu sebaris — horizontal, vertikal, utawa diagonal.</p>
+      <h3>Carane dolanan</h3>
+      <ul>
+        <li>X mlaku dhisik. Gantian pencet kothak kosong.</li>
+        <li>Yen papan kebak ora ana telu sebaris — seri.</li>
+        <li>Skor ronde disimpen otomatis.</li>
       </ul>`,
   },
 });

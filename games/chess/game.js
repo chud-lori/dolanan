@@ -95,11 +95,49 @@ register("ch", {
     yes: "Ya",
     no: "Tidak",
   },
+  jw: {
+    subtitle: "2 pemain · aturan lengkap · hotseat",
+    white: "Putih",
+    black: "Ireng",
+    turn: "Giliran {p}",
+    mateWhite: "Skakmat — Putih menang.",
+    mateBlack: "Skakmat — Ireng menang.",
+    stalemate: "Seri — pat.",
+    repetition: "Seri — posisi padha ping telu.",
+    fiftyMove: "Seri — 50 langkah ora ana sing dipangan.",
+    material: "Seri — bidak ora cukup.",
+    promote: "Promosi pion",
+    chooseMode: "Pilih mode",
+    modeHuman: "2 Pemain",
+    modeBot: "Lawan Bot",
+    botThinking: "Bot lagi mikir…",
+    difficulty: "Tingkat angele",
+    easy: "Gampang",
+    medium: "Sedheng",
+    hard: "Angel",
+    playAs: "Dolanan dadi",
+    colorWhite: "Putih",
+    colorBlack: "Ireng",
+    colorRandom: "Acak",
+    flip: "Walik",
+    resign: "Nyerah",
+    draw: "Seri",
+    drawOffered: "Tawaran seri — lawan, pencet Seri kanggo nampa",
+    drawDeclined: "Tawaran seri ditolak.",
+    resignedWhite: "Putih nyerah — Ireng menang.",
+    resignedBlack: "Ireng nyerah — Putih menang.",
+    drawAgreed: "Seri amarga sepakat.",
+    confirmTakeback: "Balekake langkah pungkasan?",
+    confirmResign: "Arep nyerah?",
+    yes: "Iya",
+    no: "Ora",
+  },
 });
 
 wireGameHead({
   titleEn: "Chess",
   titleId: "Catur",
+  titleJw: "Catur",
   subtitleKey: "ch.subtitle",
   rules: {
     en: `
@@ -126,6 +164,18 @@ wireGameHead({
       </ul>
       <h3>Versi ini</h3>
       <p>Hotseat saja — tanpa AI. Tap bidak untuk lihat langkah legal; tap target untuk jalan. Tombol Batalkan urungkan langkah terakhir.</p>`,
+    jw: `
+      <h3>Tujuan</h3>
+      <p>Skakmat ratu lawan — serang nganti ora ana dalan ngungsi, mblokir, utawa mbelani.</p>
+      <h3>Aturan spesial</h3>
+      <ul>
+        <li><strong>Rokade</strong> — ratu mlumpat rong kothak menyang benteng sing durung obah; benteng mlumpat menyang sisih liya.</li>
+        <li><strong>En passant</strong> — mangan pion sing lagi loncat rong kothak ngliwati pionmu.</li>
+        <li><strong>Promosi</strong> — pion tekan baris pungkasan dadi Mentri, Benteng, Gajah, utawa Jaran (kowe sing milih).</li>
+        <li><strong>Seri</strong>: pat, posisi padha ping telu, 50 langkah tanpa mangan/obah pion, utawa bidak ora cukup.</li>
+      </ul>
+      <h3>Versi iki</h3>
+      <p>Isa lawan manungsa (hotseat) utawa lawan bot. Pencet bidak kanggo weruh langkah legal; pencet target kanggo mlaku. Tombol Batalke ngembalekake langkah pungkasan.</p>`,
   },
 });
 

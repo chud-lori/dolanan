@@ -24,11 +24,20 @@ register("c4", {
     win: "{p} menang!",
     draw: "Seri.",
   },
+  jw: {
+    subtitle: "2 pemain · urutake papat sebaris",
+    red: "Abang",
+    yellow: "Kuning",
+    turn: "Giliran {p}",
+    win: "{p} menang!",
+    draw: "Seri.",
+  },
 });
 
 wireGameHead({
   titleEn: "Connect Four",
   titleId: "Connect Four",
+  titleJw: "Connect Four",
   subtitleKey: "c4.subtitle",
   rules: {
     en: `
@@ -46,6 +55,14 @@ wireGameHead({
       <ul>
         <li>Merah duluan. Tap kolom buat jatuhin bidak — otomatis ke slot paling bawah.</li>
         <li>Kalau papan penuh tanpa empat sebaris, seri.</li>
+      </ul>`,
+    jw: `
+      <h3>Tujuan</h3>
+      <p>Urutake papat bidakmu sebaris — horizontal, vertikal, utawa diagonal.</p>
+      <h3>Carane dolanan</h3>
+      <ul>
+        <li>Abang mlaku dhisik. Pencet kolom kanggo ngedhokake bidak — otomatis mudhun menyang slot paling ngisor.</li>
+        <li>Yen papan kebak ora ana papat sebaris, seri.</li>
       </ul>`,
   },
 });

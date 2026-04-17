@@ -20,11 +20,19 @@ register("db", {
     win: "{p} menang dengan {n}!",
     tie: "Seri — {n}.",
   },
+  jw: {
+    subtitle: "2 pemain · tarik garis, kuwasani kothak, giliran bonus",
+    p1: "Biru", p2: "Oranye",
+    turn: "Giliran {p}",
+    win: "{p} menang karo {n}!",
+    tie: "Seri — {n}.",
+  },
 });
 
 wireGameHead({
   titleEn: "Dots & Boxes",
   titleId: "Titik & Kotak",
+  titleJw: "Titik lan Kothak",
   subtitleKey: "db.subtitle",
   rules: {
     en: `
@@ -46,6 +54,16 @@ wireGameHead({
         <li>Menutup sisi ke-4 sebuah kotak = kotak jadi milikmu + <strong>giliran bonus</strong> — terus tarik.</li>
         <li>Game selesai saat semua garis sudah ditarik. Kotak terbanyak menang.</li>
         <li>Tombol ukuran (4×4 → 7×7) untuk ganti papan antar ronde.</li>
+      </ul>`,
+    jw: `
+      <h3>Tujuan</h3>
+      <p>Duweni kothak luwih akeh tinimbang lawan pas kabeh garis wis ditarik.</p>
+      <h3>Carane dolanan</h3>
+      <ul>
+        <li>Gantian narik siji garis antara rong titik sing jejer.</li>
+        <li>Nutup sisi kaping-4 kothak = kothak dadi duwekmu + <strong>giliran bonus</strong> — terus narik.</li>
+        <li>Dolanan rampung yen kabeh garis wis ditarik. Kothak paling akeh menang.</li>
+        <li>Tombol ukuran (4×4 → 7×7) kanggo ngganti papan antar ronde.</li>
       </ul>`,
   },
 });

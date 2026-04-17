@@ -2,7 +2,7 @@
 // Settings (language, sound, theme) are ONLY controlled from the hub.
 // Games just read their stored state — no duplicate toggle buttons.
 
-import { t, getLang, applyI18n } from "./i18n.js";
+import { t, applyI18n, pickLocalized } from "./i18n.js";
 import { mountHowToButton, setRules } from "./how-to.js";
 import { engage as engageWakeLock } from "./wake-lock.js";
 import { registerServiceWorker } from "./sw-register.js";
@@ -18,10 +18,11 @@ registerServiceWorker();
  * @param {object} opts
  * @param {string} opts.titleEn
  * @param {string} opts.titleId
+ * @param {string} [opts.titleJw]
  * @param {string} [opts.subtitleKey]
- * @param {{en: string, id: string}} [opts.rules] — how-to content
+ * @param {{en: string, id: string, jw?: string}} [opts.rules] — how-to content
  */
-export function wireGameHead({ titleEn, titleId, subtitleKey, rules } = {}) {
+export function wireGameHead({ titleEn, titleId, titleJw, subtitleKey, rules } = {}) {
   document.body.classList.add("game");
   engageWakeLock();
 
@@ -43,7 +44,9 @@ export function wireGameHead({ titleEn, titleId, subtitleKey, rules } = {}) {
   }
 
   function refresh() {
-    if (titleEl) titleEl.textContent = getLang() === "id" ? titleId : titleEn;
+    if (titleEl) {
+      titleEl.textContent = pickLocalized({ en: titleEn, id: titleId, jw: titleJw });
+    }
     if (subtitleEl && subtitleKey) subtitleEl.textContent = t(subtitleKey);
     if (backLink) backLink.textContent = t("nav.back");
     applyI18n();

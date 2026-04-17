@@ -22,11 +22,19 @@ register("ck", {
     turn: "Giliran {p}",
     win: "{p} menang!",
   },
+  jw: {
+    subtitle: "2 pemain · diagonal · mangan kudu",
+    red: "Abang",
+    black: "Ireng",
+    turn: "Giliran {p}",
+    win: "{p} menang!",
+  },
 });
 
 wireGameHead({
   titleEn: "Checkers",
   titleId: "Dam",
+  titleJw: "Dam",
   subtitleKey: "ck.subtitle",
   rules: {
     en: `
@@ -53,6 +61,18 @@ wireGameHead({
       </ul>
       <h3>Raja</h3>
       <p>Bidak yang sampai baris paling jauh jadi raja, bisa jalan diagonal ke segala arah.</p>`,
+    jw: `
+      <h3>Tujuan</h3>
+      <p>Entekake kabeh bidak lawan, utawa nggawe lawan ora isa mlaku.</p>
+      <h3>Gerakan</h3>
+      <ul>
+        <li>Bidak mlaku diagonal menyang ngarep, menyang kothak peteng sing kosong.</li>
+        <li>Mangan sarana mlumpati bidak lawan sing jejer, mudhun ing kothak kosong sabanjure.</li>
+        <li>Mangan iku <strong>kudu</strong> — yen isa mangan, kudu mangan.</li>
+        <li>Mlumpat rambatan: terus mlumpat yen isih ana sing isa dipangan.</li>
+      </ul>
+      <h3>Raja</h3>
+      <p>Bidak sing tekan baris paling adoh dadi raja, isa mlaku diagonal menyang endi wae.</p>`,
   },
 });
 

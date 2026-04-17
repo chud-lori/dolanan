@@ -39,11 +39,27 @@ register("hm", {
     cat_teknologi: "Teknologi",
     cat_alam: "Alam",
   },
+  jw: {
+    subtitle: "Salah 6 = tamat. Sing tenanan!",
+    wrongs: "{n}/6 luput",
+    win: "Bener! Tembunge: {w}",
+    lose: "Tamat. Tembunge: {w}",
+    category: "Kategori",
+    change: "Ganti",
+    cat_animals: "Kewan",
+    cat_food: "Panganan",
+    cat_tech: "Teknologi",
+    cat_nature: "Alam",
+    cat_makanan: "Panganan",
+    cat_teknologi: "Teknologi",
+    cat_alam: "Alam",
+  },
 });
 
 wireGameHead({
   titleEn: "Hangman",
   titleId: "Tebak Kata",
+  titleJw: "Tebak Tembung",
   subtitleKey: "hm.subtitle",
   rules: {
     en: `
