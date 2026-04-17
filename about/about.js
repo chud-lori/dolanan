@@ -1,6 +1,6 @@
-// About page: applies theme + i18n, fetches the SW VERSION for display.
+// About page: applies theme + i18n.
 
-import { register, applyI18n, getLang } from "/shared/i18n.js";
+import { register, applyI18n } from "/shared/i18n.js";
 import "/shared/theme.js";
 import { registerServiceWorker } from "/shared/sw-register.js";
 
@@ -21,7 +21,6 @@ register("about", {
     creditsBody:
       'Created by <a href="https://profile.lori.my.id" rel="noopener">Lori</a>. Sister app: <a href="https://ethok.lori.my.id" rel="noopener">Ethok-Ethok</a>.',
     source: "Source",
-    version: "Version",
   },
   id: {
     what: "Apa ini",
@@ -39,7 +38,6 @@ register("about", {
     creditsBody:
       'Dibuat oleh <a href="https://profile.lori.my.id" rel="noopener">Lori</a>. Aplikasi saudara: <a href="https://ethok.lori.my.id" rel="noopener">Ethok-Ethok</a>.',
     source: "Kode sumber",
-    version: "Versi",
   },
   jw: {
     what: "Apa iki",
@@ -57,25 +55,11 @@ register("about", {
     creditsBody:
       'Digawe dening <a href="https://profile.lori.my.id" rel="noopener">Lori</a>. Aplikasi sedulur: <a href="https://ethok.lori.my.id" rel="noopener">Ethok-Ethok</a>.',
     source: "Kode sumber",
-    version: "Versi",
   },
 });
 
 // Apply translations on load + on language change.
 applyI18n();
 document.addEventListener("langchange", () => applyI18n());
-
-// Pull the SW VERSION constant from /sw.js so users can see what build they're on.
-async function showVersion() {
-  try {
-    const res = await fetch("/sw.js", { cache: "no-store" });
-    const text = await res.text();
-    const m = text.match(/VERSION\s*=\s*"([^"]+)"/);
-    document.getElementById("about-version").textContent = m ? m[1] : "—";
-  } catch {
-    document.getElementById("about-version").textContent = "—";
-  }
-}
-showVersion();
 
 registerServiceWorker();

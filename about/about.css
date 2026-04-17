@@ -42,16 +42,3 @@
   margin: 4px 0;
 }
 
-.about-version {
-  margin-top: 24px;
-  padding-top: 12px;
-  border-top: 1px solid var(--border);
-  font-size: 13px;
-  color: var(--text-muted);
-  text-align: center;
-}
-
-#about-version {
-  font-family: "SF Mono", Menlo, monospace;
-  font-weight: 600;
-}
