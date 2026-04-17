@@ -75,6 +75,55 @@
      0 1px 2px rgba(0,0,0,0.25);
 }
 
+.ch-setup-label {
+  font-size: 13px;
+  color: var(--text-muted);
+  text-align: left;
+  margin: 4px 2px;
+  font-weight: 600;
+}
+
+/* Captured-pieces strip — one above and one below the board. */
+.ch-captured {
+  min-height: 24px;
+  padding: 2px 6px;
+  font-size: clamp(16px, 4vw, 22px);
+  line-height: 1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  color: var(--text);
+  opacity: 0.85;
+}
+
+.ch-captured .cap-piece {
+  text-shadow: 0 1px 0 rgba(0,0,0,0.15);
+}
+.ch-captured .cap-piece.white {
+  color: #fafafa;
+  text-shadow:
+    -1px -1px 0 #1e293b,
+     1px -1px 0 #1e293b,
+    -1px  1px 0 #1e293b,
+     1px  1px 0 #1e293b;
+}
+.ch-captured .cap-piece.black { color: #0f172a; }
+
+.ch-captured .cap-advantage {
+  margin-left: auto;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-muted);
+  align-self: center;
+}
+
+/* Action buttons — smaller so all 5 fit on a phone row. */
+.ch-action {
+  padding: 6px 10px;
+  font-size: 13px;
+  min-height: 34px;
+}
+
 .promo-btn {
   font-size: 32px;
   background: var(--card-2);

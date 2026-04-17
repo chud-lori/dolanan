@@ -48,10 +48,17 @@
           </button>
         </div>
         <div id="diff-row" hidden style="margin-top: 12px;">
+          <div class="ch-setup-label" data-i18n="ch.difficulty">Difficulty</div>
           <div class="lang-seg" id="diff-seg" style="margin-bottom: 12px;">
-            <button type="button" data-diff="easy">Easy</button>
-            <button type="button" data-diff="medium" class="active">Medium</button>
-            <button type="button" data-diff="hard">Hard</button>
+            <button type="button" data-diff="easy" data-i18n="ch.easy">Easy</button>
+            <button type="button" data-diff="medium" class="active" data-i18n="ch.medium">Medium</button>
+            <button type="button" data-diff="hard" data-i18n="ch.hard">Hard</button>
+          </div>
+          <div class="ch-setup-label" data-i18n="ch.playAs">Play as</div>
+          <div class="lang-seg" id="color-seg" style="margin-bottom: 12px;">
+            <button type="button" data-color="w" class="active" data-i18n="ch.colorWhite">White</button>
+            <button type="button" data-color="b" data-i18n="ch.colorBlack">Black</button>
+            <button type="button" data-color="r" data-i18n="ch.colorRandom">Random</button>
           </div>
           <button type="button" class="btn btn-primary" id="btn-start-bot" style="width: 100%;" data-i18n="btn.start">Start</button>
         </div>
@@ -59,15 +66,24 @@
 
       <!-- Game area: hidden until mode is chosen -->
       <div id="ch-play" hidden>
+        <!-- Pieces captured by white (shown above board when not flipped) -->
+        <div id="captured-top" class="ch-captured" aria-label="Captured pieces"></div>
+
         <div class="board-wrap">
           <div id="board" class="ch-board" aria-label="Chess board"></div>
         </div>
 
+        <!-- Pieces captured by the player on the near side -->
+        <div id="captured-bottom" class="ch-captured" aria-label="Captured pieces"></div>
+
         <div id="status" class="status-banner" hidden></div>
 
-        <div class="row" style="justify-content: center; margin-top: 12px;">
-          <button id="undo" type="button" class="btn btn-secondary" data-i18n="btn.undo">↶ Undo</button>
-          <button id="reset" type="button" class="btn btn-ghost" data-i18n="btn.newGame">New game</button>
+        <div class="row" style="justify-content: center; margin-top: 10px; gap: 6px; flex-wrap: wrap;">
+          <button id="flip" type="button" class="btn btn-secondary ch-action" data-i18n="ch.flip">Flip</button>
+          <button id="undo" type="button" class="btn btn-secondary ch-action" data-i18n="btn.undo">↶ Undo</button>
+          <button id="draw-btn" type="button" class="btn btn-secondary ch-action" data-i18n="ch.draw">Draw</button>
+          <button id="resign" type="button" class="btn btn-secondary ch-action" data-i18n="ch.resign">Resign</button>
+          <button id="reset" type="button" class="btn btn-primary ch-action" data-i18n="btn.newGame">New game</button>
         </div>
       </div>
     </main>

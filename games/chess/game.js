@@ -40,6 +40,22 @@ register("ch", {
     easy: "Easy",
     medium: "Medium",
     hard: "Hard",
+    playAs: "Play as",
+    colorWhite: "White",
+    colorBlack: "Black",
+    colorRandom: "Random",
+    flip: "Flip",
+    resign: "Resign",
+    draw: "Draw",
+    drawOffered: "Draw offered — opponent, tap Draw to accept",
+    drawDeclined: "Draw declined.",
+    resignedWhite: "White resigned — Black wins.",
+    resignedBlack: "Black resigned — White wins.",
+    drawAgreed: "Draw by agreement.",
+    confirmTakeback: "Take back last move?",
+    confirmResign: "Resign this game?",
+    yes: "Yes",
+    no: "No",
   },
   id: {
     subtitle: "2 pemain · aturan lengkap · hotseat",
@@ -61,6 +77,22 @@ register("ch", {
     easy: "Mudah",
     medium: "Sedang",
     hard: "Sulit",
+    playAs: "Main sebagai",
+    colorWhite: "Putih",
+    colorBlack: "Hitam",
+    colorRandom: "Acak",
+    flip: "Balik",
+    resign: "Menyerah",
+    draw: "Seri",
+    drawOffered: "Tawaran seri — lawan, tekan Seri untuk setuju",
+    drawDeclined: "Tawaran seri ditolak.",
+    resignedWhite: "Putih menyerah — Hitam menang.",
+    resignedBlack: "Hitam menyerah — Putih menang.",
+    drawAgreed: "Seri atas kesepakatan.",
+    confirmTakeback: "Urungkan langkah terakhir?",
+    confirmResign: "Menyerah?",
+    yes: "Ya",
+    no: "Tidak",
   },
 });
 
@@ -565,9 +597,12 @@ const engine = {
 };
 
 let botMode = false;    // false = 2-player, true = vs bot
-let botColor = "b";     // bot plays black
+let botColor = "b";     // which side the bot plays
+let humanColor = "w";   // which side the user plays (vs-bot only)
 let botDifficulty = "medium";
 let botBusy = false;
+let flipped = false;    // flip board 180° (for hotseat black player's view)
+let drawOfferedBy = null; // "w" | "b" | null — who offered a draw, if anyone
 // Bumped on every newGame / backToSetup. doBotMove() captures this at entry;
 // if it changes during the async search, the move is discarded — prevents
 // the bot from applying a stale move to a fresh board.
@@ -621,8 +656,11 @@ function render() {
   const lastMove = state.history.length ? state.history[state.history.length - 1].move : null;
 
   boardEl.innerHTML = "";
-  for (let r = 0; r < 8; r++) {
-    for (let c = 0; c < 8; c++) {
+  // When `flipped`, iterate in reverse so row 7/col 7 is first (black's view).
+  const rowOrder = flipped ? [7,6,5,4,3,2,1,0] : [0,1,2,3,4,5,6,7];
+  const colOrder = flipped ? [7,6,5,4,3,2,1,0] : [0,1,2,3,4,5,6,7];
+  for (const r of rowOrder) {
+    for (const c of colOrder) {
       const sq = document.createElement("button");
       sq.type = "button";
       sq.className = `ch-sq ${squareClass(r, c)}`;
@@ -645,6 +683,8 @@ function render() {
       boardEl.appendChild(sq);
     }
   }
+
+  renderCaptured();
 
   const name = (p) => t(p === "w" ? "ch.white" : "ch.black");
   if (botBusy) {
@@ -674,6 +714,8 @@ function render() {
       state.result.includes("repetition") ? t("ch.repetition") :
       state.result.includes("50-move") ? t("ch.fiftyMove") :
       state.result.includes("material") ? t("ch.material") :
+      state.result.includes("agreement") ? t("ch.drawAgreed") :
+      state.result.includes("resign") ? t(state.result === "resign-w" ? "ch.resignedWhite" : "ch.resignedBlack") :
       state.result;
   } else {
     statusEl.hidden = true;
@@ -683,6 +725,80 @@ function render() {
 }
 
 document.addEventListener("langchange", () => render());
+
+// ---- Captured pieces -------------------------------------------------------
+
+// Standard material values used for the "+N" advantage indicator.
+const PIECE_VALUE = { P: 1, N: 3, B: 3, R: 5, Q: 9 };
+
+function capturedPieces() {
+  // Scan all history steps for move.captured. Builds two ordered-by-value
+  // lists: captured BY white (i.e. captured black pieces) and BY black.
+  const byWhite = []; // black pieces white took
+  const byBlack = []; // white pieces black took
+  for (const step of state.history) {
+    const cap = step.move?.captured;
+    if (!cap) continue;
+    (cap.color === "b" ? byWhite : byBlack).push(cap.type);
+  }
+  const sortByVal = (a, b) => (PIECE_VALUE[b] || 0) - (PIECE_VALUE[a] || 0);
+  byWhite.sort(sortByVal);
+  byBlack.sort(sortByVal);
+  return { byWhite, byBlack };
+}
+
+function renderCaptured() {
+  const topEl = document.getElementById("captured-top");
+  const botEl = document.getElementById("captured-bottom");
+  if (!topEl || !botEl) return;
+  const { byWhite, byBlack } = capturedPieces();
+
+  // "Top" strip shows pieces captured BY the player at the top of the board.
+  // Without flip, top = black; with flip, top = white. Similarly for bottom.
+  const topColor = flipped ? "w" : "b";
+  const bottomColor = flipped ? "b" : "w";
+
+  function strip(color) {
+    // color is the color of the player whose strip this is. They've captured
+    // the OPPOSITE color's pieces.
+    const captured = color === "w" ? byWhite : byBlack;
+    const glyphs = captured.map((t) => {
+      const opp = color === "w" ? "b" : "w";
+      return `<span class="cap-piece ${opp === "w" ? "white" : "black"}">${GLYPH[opp][t]}</span>`;
+    }).join("");
+    // Material advantage (only shown if positive for this side).
+    const myTotal = captured.reduce((s, t) => s + (PIECE_VALUE[t] || 0), 0);
+    const oppCaptured = color === "w" ? byBlack : byWhite;
+    const oppTotal = oppCaptured.reduce((s, t) => s + (PIECE_VALUE[t] || 0), 0);
+    const advantage = myTotal - oppTotal;
+    const adv = advantage > 0 ? `<span class="cap-advantage">+${advantage}</span>` : "";
+    return glyphs + adv;
+  }
+
+  topEl.innerHTML = strip(topColor);
+  botEl.innerHTML = strip(bottomColor);
+}
+
+// ---- Modal confirm helper --------------------------------------------------
+
+function confirmDialog(message, onYes) {
+  const root = document.createElement("div");
+  root.className = "modal-backdrop";
+  root.innerHTML = `
+    <div class="modal" role="dialog" aria-modal="true">
+      <p style="margin: 8px 0 16px;">${message}</p>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-ghost" data-no>${t("ch.no")}</button>
+        <button type="button" class="btn btn-primary" data-yes>${t("ch.yes")}</button>
+      </div>
+    </div>`;
+  document.body.appendChild(root);
+  const close = () => root.remove();
+  root.querySelector("[data-yes]").addEventListener("click", () => { close(); onYes(); });
+  root.querySelector("[data-no]").addEventListener("click", close);
+  root.addEventListener("click", (e) => { if (e.target === root) close(); });
+  root.querySelector("[data-yes]").focus();
+}
 
 function onSquareClick(r, c, legalAll) {
   if (state.result) return;
@@ -724,7 +840,12 @@ function performMove(move) {
     askPromotion(move, promos);
     return;
   }
+  // Draw-offer lifecycle: if the OPPONENT moves after an offer, they've
+  // implicitly declined. If the OFFERER themselves moves, the offer remains
+  // pending for the opponent's next decision.
+  const mover = state.turn;
   applyMove(state, move);
+  if (drawOfferedBy && drawOfferedBy !== mover) drawOfferedBy = null;
   if (move.captured) { fx.play("capture"); fx.haptic("capture"); }
   else { fx.play("place"); fx.haptic("tap"); }
   selected = null;
@@ -763,15 +884,31 @@ const setupEl = document.getElementById("ch-setup");
 const playEl = document.getElementById("ch-play");
 const diffRow = document.getElementById("diff-row");
 const diffSeg = document.getElementById("diff-seg");
+const colorSeg = document.getElementById("color-seg");
 const turnPill = document.getElementById("turn-pill");
+
+// Pick the human's color: "w" | "b" | "r" (random) from the segmented toggle.
+let humanColorChoice = "w";
 
 function startGame(mode) {
   gameGen++;
   botMode = mode === "bot";
-  // botDifficulty is set by the difficulty segmented toggle handler; default
-  // to "medium" if never touched.
   botDifficulty = botDifficulty || "medium";
   botBusy = false;
+  drawOfferedBy = null;
+
+  // Resolve color in bot mode (no effect in 2-player mode).
+  if (botMode) {
+    humanColor = humanColorChoice === "r"
+      ? (Math.random() < 0.5 ? "w" : "b")
+      : humanColorChoice;
+    botColor = humanColor === "w" ? "b" : "w";
+    // If the human picked black, flip the board so their side is on the bottom.
+    flipped = humanColor === "b";
+  } else {
+    flipped = false;
+  }
+
   state = initialState();
   selected = null;
   selectedMoves = [];
@@ -809,14 +946,109 @@ diffSeg.querySelectorAll("[data-diff]").forEach((btn) => {
   });
 });
 
+colorSeg.querySelectorAll("[data-color]").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    humanColorChoice = btn.dataset.color;
+    colorSeg.querySelectorAll("[data-color]").forEach((b) =>
+      b.classList.toggle("active", b === btn));
+  });
+});
+
 document.getElementById("btn-start-bot").addEventListener("click", () => {
   startGame("bot");
 });
 
 document.getElementById("reset").addEventListener("click", backToSetup);
+
+// ---- Flip board ----
+document.getElementById("flip").addEventListener("click", () => {
+  flipped = !flipped;
+  render();
+});
+
+// ---- Resign ----
+document.getElementById("resign").addEventListener("click", () => {
+  if (state.result || botBusy) return;
+  confirmDialog(t("ch.confirmResign"), () => {
+    // Distinct result strings so render()'s status mapping uses the correct
+    // localized message (see the state.result.includes("resign") branch).
+    state.result = state.turn === "w" ? "resign-w" : "resign-b";
+    fx.play("lose"); fx.haptic("lose");
+    render();
+  });
+});
+
+// ---- Offer / accept draw ----
+document.getElementById("draw-btn").addEventListener("click", () => {
+  if (state.result || botBusy) return;
+
+  if (botMode) {
+    // Bot decides: accept only if its evaluation favors the human (or dead equal).
+    // Using a simple material-count heuristic here keeps this lightweight.
+    const bal = materialBalance(state);
+    const humanSign = humanColor === "w" ? 1 : -1;
+    // If the bot is at least slightly worse or drawish from its own POV, accept.
+    const botPerspective = -humanSign * bal;
+    if (botPerspective <= 0.5) {
+      state.result = "½-½ (agreement)";
+      statusEl.hidden = false;
+      statusEl.className = "status-banner draw";
+      statusEl.textContent = t("ch.drawAgreed");
+      fx.play("lose"); fx.haptic("tap");
+    } else {
+      // Bot declines — show a banner that clears on next move.
+      showTransient(t("ch.drawDeclined"));
+    }
+    return;
+  }
+
+  // 2-player hotseat: one side offers, the other accepts by tapping Draw too.
+  if (drawOfferedBy && drawOfferedBy !== state.turn) {
+    state.result = "½-½ (agreement)";
+    statusEl.hidden = false;
+    statusEl.className = "status-banner draw";
+    statusEl.textContent = t("ch.drawAgreed");
+    drawOfferedBy = null;
+    render();
+    return;
+  }
+  drawOfferedBy = state.turn;
+  showTransient(t("ch.drawOffered"));
+});
+
+function materialBalance(s) {
+  // Positive = white ahead, negative = black ahead. Kings excluded.
+  const V = { P: 1, N: 3, B: 3, R: 5, Q: 9 };
+  let bal = 0;
+  for (let r = 0; r < 8; r++) {
+    for (let c = 0; c < 8; c++) {
+      const p = s.board[r][c];
+      if (!p || p.type === "K") continue;
+      bal += (p.color === "w" ? 1 : -1) * (V[p.type] || 0);
+    }
+  }
+  return bal;
+}
+
+function showTransient(message) {
+  statusEl.hidden = false;
+  statusEl.className = "status-banner draw";
+  statusEl.textContent = message;
+}
+
 document.getElementById("undo").addEventListener("click", () => {
   if (!state.history.length) return;
   if (botBusy) return;
+  // In bot mode, confirm so a tap doesn't accidentally rewind.
+  if (botMode) {
+    confirmDialog(t("ch.confirmTakeback"), () => doUndo());
+    return;
+  }
+  doUndo();
+});
+
+function doUndo() {
+  if (!state.history.length) return;
   undoMove();
   if (botMode && state.history.length && state.turn === botColor) {
     undoMove();
@@ -824,7 +1056,7 @@ document.getElementById("undo").addEventListener("click", () => {
   selected = null;
   selectedMoves = [];
   render();
-});
+}
 
 // Start on setup screen
 turnPill.hidden = true;
