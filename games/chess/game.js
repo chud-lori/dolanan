@@ -722,6 +722,14 @@ function render() {
   }
   const promoTitle = document.getElementById("promo-title");
   if (promoTitle) promoTitle.textContent = t("ch.promote");
+
+  // After game end, only "New game" is meaningful — Flip/Undo/Draw/Resign
+  // don't apply to a finished game and just clutter the action row.
+  const ended = !!state.result;
+  for (const id of ["flip", "undo", "draw-btn", "resign"]) {
+    const el = document.getElementById(id);
+    if (el) el.hidden = ended;
+  }
 }
 
 document.addEventListener("langchange", () => render());

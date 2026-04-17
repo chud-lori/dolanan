@@ -107,8 +107,6 @@
   box-shadow: var(--shadow-sm);
 }
 
-/* `display: inline-flex` above otherwise overrides the HTML hidden attr. */
-.turn-pill[hidden] { display: none !important; }
 
 .turn-dot {
   width: 12px;

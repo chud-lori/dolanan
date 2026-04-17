@@ -128,6 +128,12 @@ body.game {
 body { user-select: none; }
 input, textarea, [contenteditable] { user-select: auto; }
 
+/* The HTML `hidden` attribute must always win — several of our component
+   classes (.btn, .modal-backdrop, .turn-pill, etc.) set `display: inline-flex`
+   or `display: flex`, which has higher specificity than the browser default
+   for [hidden] and would make hidden elements still appear. */
+[hidden] { display: none !important; }
+
 a {
   color: var(--primary);
   text-decoration: none;
@@ -288,10 +294,6 @@ h3 {
   animation: fade-in 0.15s ease-out;
 }
 
-/* `hidden` attribute must win over our display:flex above. */
-.modal-backdrop[hidden] {
-  display: none !important;
-}
 
 .modal {
   background: var(--card);
