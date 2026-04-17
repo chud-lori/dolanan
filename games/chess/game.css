@@ -75,6 +75,25 @@
      0 1px 2px rgba(0,0,0,0.25);
 }
 
+.ch-mode-bar {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  align-items: center;
+  padding: 0 0 8px;
+  flex-wrap: wrap;
+}
+
+.ch-diff-select {
+  padding: 6px 10px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--card-2);
+  color: var(--text);
+  font: inherit;
+  font-size: 13px;
+}
+
 .promo-btn {
   font-size: 32px;
   background: var(--card-2);

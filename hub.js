@@ -3,6 +3,7 @@
 import { GAMES } from "./games.js";
 import { t, getLang, setLang, applyI18n } from "./shared/i18n.js";
 import { mountThemeButton } from "./shared/theme.js";
+import { mountMuteButton } from "./shared/fx.js";
 
 const grid = document.getElementById("game-grid");
 const langSeg = document.getElementById("lang-seg");
@@ -44,8 +45,10 @@ document.addEventListener("langchange", () => {
 renderLang();
 renderGrid();
 
-// Theme toggle in the hub header controls
-mountThemeButton(document.querySelector(".hub-controls"));
+// Settings controls — only live on the hub; games read stored state.
+const controlsEl = document.querySelector(".hub-controls");
+mountThemeButton(controlsEl);
+mountMuteButton(controlsEl);
 
 // ---- Install prompt (Android/Chrome) ----
 let deferredPrompt = null;

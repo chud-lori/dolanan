@@ -1,65 +1,42 @@
-// Theme toggle — persists to localStorage, overrides system preference.
-// Three states: "system" (default), "light" (force light), "dark" (force dark).
-// The active palette is applied via [data-theme] on <html>.
+// Theme toggle — simple 2-state: light ↔ dark.
+// Defaults to system preference on first visit, then persists the choice.
 
 import { storage } from "./storage.js";
 
 const KEY = "theme";
-let current = storage.get(KEY, "system"); // "system" | "light" | "dark"
 
-function apply() {
-  const root = document.documentElement;
-  if (current === "system") {
-    root.removeAttribute("data-theme");
-  } else {
-    root.setAttribute("data-theme", current);
-  }
-  // Update <meta name="theme-color"> for the browser chrome
-  const isDark =
-    current === "dark" ||
-    (current === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches);
-  const tc = document.querySelector('meta[name="theme-color"]');
-  if (tc) tc.content = isDark ? "#0f172a" : "#3b82f6";
-}
-
-export function getTheme() { return current; }
-
-export function isDark() {
-  if (current === "dark") return true;
-  if (current === "light") return false;
+function systemPrefersDark() {
   return window.matchMedia("(prefers-color-scheme: dark)").matches;
 }
 
-export function cycleTheme() {
-  // system → dark → light → system
-  if (current === "system") current = "dark";
-  else if (current === "dark") current = "light";
-  else current = "system";
-  storage.set(KEY, current);
+// First visit: follow the device. After that, use the stored choice.
+let dark = storage.get(KEY) != null
+  ? storage.get(KEY) === "dark"
+  : systemPrefersDark();
+
+function apply() {
+  document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
+  const tc = document.querySelector('meta[name="theme-color"]');
+  if (tc) tc.content = dark ? "#0f172a" : "#3b82f6";
+}
+
+export function isDark() { return dark; }
+
+export function toggleTheme() {
+  dark = !dark;
+  storage.set(KEY, dark ? "dark" : "light");
   apply();
-  document.dispatchEvent(new CustomEvent("themechange", { detail: current }));
+  document.dispatchEvent(new CustomEvent("themechange", { detail: dark }));
 }
 
-export function themeIcon() {
-  if (current === "dark") return "🌙";
-  if (current === "light") return "☀️";
-  return "🌓"; // system
-}
-
-/**
- * Mount a small theme toggle button into a container. Returns the button.
- */
 export function mountThemeButton(container) {
   if (!container) return null;
   const btn = document.createElement("button");
   btn.type = "button";
   btn.className = "btn btn-secondary theme-btn";
-  btn.setAttribute("aria-label", "Toggle theme");
-  const render = () => { btn.textContent = themeIcon(); };
-  btn.addEventListener("click", () => {
-    cycleTheme();
-    render();
-  });
+  btn.setAttribute("aria-label", "Toggle dark mode");
+  const render = () => { btn.textContent = dark ? "🌙" : "☀️"; };
+  btn.addEventListener("click", () => { toggleTheme(); render(); });
   document.addEventListener("themechange", render);
   container.appendChild(btn);
   render();
@@ -68,8 +45,3 @@ export function mountThemeButton(container) {
 
 // Apply on load.
 apply();
-
-// If system preference changes (and user is on "system"), re-apply.
-window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
-  if (current === "system") apply();
-});
