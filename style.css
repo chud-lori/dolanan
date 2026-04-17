@@ -2,6 +2,7 @@
    Dolanan — shared theme tokens & base styles
    =========================================================== */
 
+/* ===== Light palette (default) ===== */
 :root {
   --bg: #eff6ff;
   --bg-2: #dbeafe;
@@ -23,6 +24,65 @@
   --shadow-sm: 0 2px 8px rgba(59, 130, 246, 0.1);
   --font-stack: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
     "Helvetica Neue", Arial, sans-serif;
+
+  /* Gradient stops — referenced in body so dark mode can override them. */
+  --grad-a: #e0f2fe;
+  --grad-b: #eff6ff;
+  --grad-c: #dbeafe;
+}
+
+/* ===== Dark palette ===== */
+/* Activated by system preference OR by a manual [data-theme="dark"] on <html>. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f172a;
+    --bg-2: #1e293b;
+    --card: #1e293b;
+    --card-2: #334155;
+    --primary: #60a5fa;
+    --primary-hover: #93c5fd;
+    --secondary: #475569;
+    --accent: #38bdf8;
+    --accent-warm: #fbbf24;
+    --danger: #f87171;
+    --success: #34d399;
+    --text: #e2e8f0;
+    --text-muted: #94a3b8;
+    --border: #334155;
+    --shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+    --grad-a: #0f172a;
+    --grad-b: #1e293b;
+    --grad-c: #0f172a;
+    color-scheme: dark;
+  }
+}
+
+/* Manual override: user clicked the dark/light toggle. */
+:root[data-theme="dark"] {
+  --bg: #0f172a;
+  --bg-2: #1e293b;
+  --card: #1e293b;
+  --card-2: #334155;
+  --primary: #60a5fa;
+  --primary-hover: #93c5fd;
+  --secondary: #475569;
+  --accent: #38bdf8;
+  --accent-warm: #fbbf24;
+  --danger: #f87171;
+  --success: #34d399;
+  --text: #e2e8f0;
+  --text-muted: #94a3b8;
+  --border: #334155;
+  --shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+  --grad-a: #0f172a;
+  --grad-b: #1e293b;
+  --grad-c: #0f172a;
+  color-scheme: dark;
+}
+:root[data-theme="light"] {
+  color-scheme: light;
 }
 
 *,
@@ -45,7 +105,7 @@ body {
   font-family: var(--font-stack);
   color: var(--text);
   background:
-    linear-gradient(135deg, #e0f2fe 0%, #eff6ff 50%, #dbeafe 100%);
+    linear-gradient(135deg, var(--grad-a) 0%, var(--grad-b) 50%, var(--grad-c) 100%);
   background-attachment: fixed;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
@@ -174,7 +234,7 @@ h3 {
 /* ===== Segmented language toggle ===== */
 .lang-seg {
   display: inline-flex;
-  background: var(--card-2);
+  background: var(--bg-2);
   border: 1px solid var(--border);
   border-radius: 999px;
   padding: 3px;

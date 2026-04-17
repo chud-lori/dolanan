@@ -2,6 +2,7 @@
 
 import { GAMES } from "./games.js";
 import { t, getLang, setLang, applyI18n } from "./shared/i18n.js";
+import { mountThemeButton } from "./shared/theme.js";
 
 const grid = document.getElementById("game-grid");
 const langSeg = document.getElementById("lang-seg");
@@ -42,6 +43,9 @@ document.addEventListener("langchange", () => {
 
 renderLang();
 renderGrid();
+
+// Theme toggle in the hub header controls
+mountThemeButton(document.querySelector(".hub-controls"));
 
 // ---- Install prompt (Android/Chrome) ----
 let deferredPrompt = null;

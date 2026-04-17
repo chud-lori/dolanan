@@ -90,4 +90,14 @@ export const GAMES = [
     players: "2+",
     blurb: { en: "Pass-phone dares.", id: "Tantangan estafet." },
   },
+  {
+    slug: "congklak",
+    icon: "/icons/games/congklak.svg",
+    name: { en: "Congklak", id: "Congklak" },
+    players: "2",
+    blurb: {
+      en: "Traditional Indonesian mancala. Sow, relay, capture.",
+      id: "Mancala tradisional Indonesia. Tabur, lanjut, tembak.",
+    },
+  },
 ];

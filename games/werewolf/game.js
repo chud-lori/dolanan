@@ -272,6 +272,8 @@ function startGame() {
     role: roles[i],
     alive: true,
   }));
+  rememberNames(state.players.map((p) => p.name));
+  fx.play("click"); fx.haptic("tap");
   state.revealIdx = 0;
   renderReveal();
 }

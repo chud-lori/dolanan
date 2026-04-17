@@ -5,6 +5,7 @@
 import { t, getLang, setLang, applyI18n } from "./i18n.js";
 import { mountMuteButton } from "./fx.js";
 import { mountHowToButton, setRules } from "./how-to.js";
+import { mountThemeButton } from "./theme.js";
 import { engage as engageWakeLock } from "./wake-lock.js";
 
 /**
@@ -49,8 +50,9 @@ export function wireGameHead({ titleEn, titleId, subtitleKey, rules } = {}) {
     });
   }
 
-  // Mute + how-to buttons
+  // Mute + theme + how-to buttons
   mountMuteButton(tools);
+  mountThemeButton(tools);
   if (rules) {
     setRules(rules);
     mountHowToButton(tools);

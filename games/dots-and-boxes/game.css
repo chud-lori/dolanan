@@ -1,13 +1,13 @@
 .db-board {
   width: min(94vw, 48vh, 520px);
   height: auto;
-  background: var(--card);
+  background: var(--card-2);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
   touch-action: manipulation;
 }
 
-.db-dot { fill: #1e3a8a; }
+.db-dot { fill: var(--text); }
 .db-edge { stroke: transparent; stroke-width: 3; cursor: pointer; transition: stroke 0.15s; }
 .db-edge:hover:not(.locked) { stroke: rgba(59, 130, 246, 0.4); }
 .db-edge.locked { cursor: default; }
