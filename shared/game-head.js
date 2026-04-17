@@ -5,9 +5,14 @@
 import { t, getLang, applyI18n } from "./i18n.js";
 import { mountHowToButton, setRules } from "./how-to.js";
 import { engage as engageWakeLock } from "./wake-lock.js";
+import { registerServiceWorker } from "./sw-register.js";
 // Import theme + fx so they apply their stored state on page load.
 import "./theme.js";
 import "./fx.js";
+
+// Every game page also auto-checks for SW updates — so a deploy reaches
+// users the next time they open ANY page, not just the hub.
+registerServiceWorker();
 
 /**
  * @param {object} opts

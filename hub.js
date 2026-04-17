@@ -4,6 +4,7 @@ import { GAMES } from "./games.js";
 import { t, getLang, setLang, applyI18n } from "./shared/i18n.js";
 import { mountThemeButton } from "./shared/theme.js";
 import { mountMuteButton } from "./shared/fx.js";
+import { registerServiceWorker } from "./shared/sw-register.js";
 
 const grid = document.getElementById("game-grid");
 const langSeg = document.getElementById("lang-seg");
@@ -70,11 +71,5 @@ window.addEventListener("appinstalled", () => {
   installBtn.hidden = true;
 });
 
-// ---- Service worker registration (non-blocking) ----
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker.register("/sw.js").catch(() => {
-      /* offline-first is best-effort */
-    });
-  });
-}
+// Register SW + auto-update on every visit.
+registerServiceWorker();
