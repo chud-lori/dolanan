@@ -498,7 +498,17 @@ function endGame(who) {
       </ul>
       <button id="again" type="button" class="btn btn-primary" style="width: 100%; margin-top: 12px;">${t("ww.playAgain")}</button>
     </div>`;
-  root.querySelector("#again").addEventListener("click", () => renderSetup());
+  root.querySelector("#again").addEventListener("click", () => {
+    // Reset round-specific state so the next setup starts clean. We keep
+    // the player count/role config + names so the same group can play again
+    // without re-typing names.
+    state.phase = "setup";
+    state.revealIdx = 0;
+    state.night = null;
+    // Strip role + alive from each player; keep just the name.
+    state.players = state.players.map((p) => ({ name: p.name }));
+    renderSetup();
+  });
 }
 
 document.addEventListener("langchange", () => {

@@ -718,7 +718,11 @@ function render() {
       state.result.includes("resign") ? t(state.result === "resign-w" ? "ch.resignedWhite" : "ch.resignedBlack") :
       state.result;
   } else {
+    // Also clear stale text so that even if some browser chrome ignores
+    // [hidden] the banner isn't showing a previous game's result.
     statusEl.hidden = true;
+    statusEl.textContent = "";
+    statusEl.className = "status-banner";
   }
   const promoTitle = document.getElementById("promo-title");
   if (promoTitle) promoTitle.textContent = t("ch.promote");
@@ -934,6 +938,8 @@ function backToSetup() {
   playEl.hidden = true;
   turnPill.hidden = true;
   statusEl.hidden = true;
+  statusEl.textContent = "";
+  statusEl.className = "status-banner";
 }
 
 // Setup buttons
@@ -999,10 +1005,8 @@ document.getElementById("draw-btn").addEventListener("click", () => {
     const botPerspective = -humanSign * bal;
     if (botPerspective <= 0.5) {
       state.result = "½-½ (agreement)";
-      statusEl.hidden = false;
-      statusEl.className = "status-banner draw";
-      statusEl.textContent = t("ch.drawAgreed");
       fx.play("lose"); fx.haptic("tap");
+      render(); // render() sets the status text AND hides end-game buttons
     } else {
       // Bot declines — show a banner that clears on next move.
       showTransient(t("ch.drawDeclined"));
