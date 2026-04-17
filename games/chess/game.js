@@ -30,6 +30,7 @@ register("ch", {
     stalemate: "Stalemate — draw.",
     repetition: "Draw — threefold repetition.",
     fiftyMove: "Draw — 50-move rule.",
+    material: "Draw — insufficient material.",
     promote: "Promote pawn",
     chooseMode: "Choose mode",
     modeHuman: "2 Players",
@@ -50,6 +51,7 @@ register("ch", {
     stalemate: "Seri — pat.",
     repetition: "Seri — posisi sama tiga kali.",
     fiftyMove: "Seri — 50 langkah tanpa makan.",
+    material: "Seri — materi tidak cukup.",
     promote: "Promosi pion",
     chooseMode: "Pilih mode",
     modeHuman: "2 Pemain",
@@ -75,7 +77,7 @@ wireGameHead({
         <li><strong>Castling</strong> — king moves two squares toward an unmoved rook; the rook hops over.</li>
         <li><strong>En passant</strong> — capture a pawn that just double-stepped past your pawn.</li>
         <li><strong>Promotion</strong> — a pawn reaching the last rank becomes a Queen, Rook, Bishop, or Knight (you pick).</li>
-        <li><strong>Draws</strong>: stalemate, threefold repetition, or 50 moves without a capture/pawn move.</li>
+        <li><strong>Draws</strong>: stalemate, threefold repetition, 50 moves without a capture/pawn move, or insufficient material (e.g. K vs K, K+B vs K).</li>
       </ul>
       <h3>This app</h3>
       <p>Hotseat only — no AI. Tap a piece to see its legal moves; tap a target to play it. Undo backs out the last move.</p>`,
@@ -87,7 +89,7 @@ wireGameHead({
         <li><strong>Rokade</strong> — raja loncat dua kotak menuju benteng yang belum bergerak; benteng melompat ke sisi lain.</li>
         <li><strong>En passant</strong> — makan pion yang baru saja loncat dua kotak melewatimu.</li>
         <li><strong>Promosi</strong> — pion sampai baris ujung jadi Mentri, Benteng, Gajah, atau Kuda (pilih sendiri).</li>
-        <li><strong>Seri</strong>: pat, posisi sama tiga kali, atau 50 langkah tanpa makan/gerak pion.</li>
+        <li><strong>Seri</strong>: pat, posisi sama tiga kali, 50 langkah tanpa makan/gerak pion, atau materi tidak cukup (misal K lawan K, K+G lawan K).</li>
       </ul>
       <h3>Versi ini</h3>
       <p>Hotseat saja — tanpa AI. Tap bidak untuk lihat langkah legal; tap target untuk jalan. Tombol Batalkan urungkan langkah terakhir.</p>`,
@@ -415,6 +417,46 @@ function applyMove(s, move) {
   s.positions.set(key, (s.positions.get(key) || 0) + 1);
   if (s.positions.get(key) >= 3) s.result = "½-½ (repetition)";
   if (s.halfmove >= 100) s.result = s.result || "½-½ (50-move)";
+
+  // Insufficient material — per FIDE, a draw is declared when neither side
+  // could possibly force checkmate with the material on the board:
+  //   • K vs K
+  //   • K + minor (B or N) vs K
+  //   • K + B vs K + B with bishops of the same color
+  if (!s.result && isInsufficientMaterial(s)) {
+    s.result = "½-½ (material)";
+  }
+}
+
+function isInsufficientMaterial(s) {
+  // Collect non-king pieces per side, plus square color of each bishop.
+  const sides = { w: [], b: [] };
+  const bishopSquareColors = { w: [], b: [] };
+  for (let r = 0; r < 8; r++) {
+    for (let c = 0; c < 8; c++) {
+      const p = s.board[r][c];
+      if (!p) continue;
+      if (p.type === "K") continue;
+      // Any pawn, rook, or queen means mate is still forceable.
+      if (p.type === "P" || p.type === "R" || p.type === "Q") return false;
+      sides[p.color].push(p.type);
+      if (p.type === "B") bishopSquareColors[p.color].push((r + c) % 2);
+    }
+  }
+  const w = sides.w, b = sides.b;
+  // K vs K
+  if (w.length === 0 && b.length === 0) return true;
+  // K + minor (B or N) vs K
+  if (w.length === 1 && b.length === 0) return true;
+  if (b.length === 1 && w.length === 0) return true;
+  // K + B vs K + B, same-square-color bishops
+  if (w.length === 1 && b.length === 1 &&
+      w[0] === "B" && b[0] === "B" &&
+      bishopSquareColors.w[0] === bishopSquareColors.b[0]) return true;
+  // Two knights vs king: technically can't force mate (only win if opponent
+  // blunders). FIDE does NOT auto-draw — it's a blockaded theoretical draw.
+  // We follow FIDE and don't auto-draw.
+  return false;
 }
 
 function undoMove() {
@@ -499,7 +541,16 @@ const engine = {
     }
     return legal;
   },
-  apply(s, m) { applyMove(s, m); },
+  apply(s, m) {
+    // Snapshot the positions map BEFORE applyMove mutates it. Without this,
+    // minimax exploration pollutes s.positions with every searched position,
+    // and the real game spuriously detects threefold repetition after a
+    // few moves.
+    const saved = new Map(s.positions);
+    applyMove(s, m);
+    // Stash the snapshot on the history step so revert() can restore it.
+    s.history[s.history.length - 1]._savedPositions = saved;
+  },
   revert(s) {
     const step = s.history.pop();
     s.board = step.prev.board;
@@ -508,7 +559,7 @@ const engine = {
     s.enPassant = step.prev.enPassant;
     s.halfmove = step.prev.halfmove;
     s.result = step.prev.result;
-    // positions map: we don't restore here since minimax doesn't check repetition
+    if (step._savedPositions) s.positions = step._savedPositions;
   },
   inCheck(s, color) { return isInCheck(s, color); },
 };
@@ -622,6 +673,7 @@ function render() {
       state.result === "stalemate" ? t("ch.stalemate") :
       state.result.includes("repetition") ? t("ch.repetition") :
       state.result.includes("50-move") ? t("ch.fiftyMove") :
+      state.result.includes("material") ? t("ch.material") :
       state.result;
   } else {
     statusEl.hidden = true;
