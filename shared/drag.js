@@ -40,6 +40,21 @@ export function enableDrag(boardEl, opts) {
 
   function startDrag(e) {
     dragging = true;
+
+    // Snapshot piece + cell sizes BEFORE onDragStart triggers a re-render —
+    // after that, originPiece/originCell are detached and getBoundingClientRect
+    // returns 0×0, which made the ghost invisible (drag worked but looked broken).
+    const pieceRect = originPiece.getBoundingClientRect();
+    const cellRect = originCell.getBoundingClientRect();
+    // Coordinates of the cell we started on, so we can null-out the live piece
+    // by class after the re-render — fades the source square while ghost flies.
+    const originCenter = {
+      x: cellRect.left + cellRect.width / 2,
+      y: cellRect.top + cellRect.height / 2,
+    };
+    const ghostW = pieceRect.width || cellRect.width * 0.9;
+    const ghostH = pieceRect.height || cellRect.height * 0.9;
+
     // Trigger selection logic so legal-move hints render before the user
     // even drops the piece.
     if (originCell && onDragStart) onDragStart(originCell);
@@ -51,12 +66,17 @@ export function enableDrag(boardEl, opts) {
     ghost.style.pointerEvents = "none";
     ghost.style.zIndex = "9999";
     ghost.style.opacity = "0.85";
-    const rect = originPiece.getBoundingClientRect();
-    ghost.style.width = rect.width + "px";
-    ghost.style.height = rect.height + "px";
-    moveGhost(e.clientX, e.clientY);
+    ghost.style.width = ghostW + "px";
+    ghost.style.height = ghostH + "px";
     document.body.appendChild(ghost);
-    originPiece.style.opacity = "0.3";
+    moveGhost(e.clientX, e.clientY);
+
+    // Fade the live piece on the source cell. After re-render originPiece is
+    // detached, so look up the cell at the original center and fade its child.
+    const liveCell = cellFromPoint(originCenter.x, originCenter.y);
+    const livePiece = liveCell?.querySelector(pieceSelector);
+    if (livePiece) livePiece.style.opacity = "0.3";
+
     // Capture so subsequent moves outside the cell still fire here.
     try { boardEl.setPointerCapture(e.pointerId); } catch { /* may fail in some browsers */ }
   }
@@ -87,9 +107,11 @@ export function enableDrag(boardEl, opts) {
       ghost.remove();
       ghost = null;
     }
-    if (originPiece) {
-      originPiece.style.opacity = "";
-    }
+    // Reset opacity on every visible piece on the board — covers both the
+    // detached originPiece (no-op) and any live piece we faded mid-drag.
+    boardEl.querySelectorAll(pieceSelector).forEach((el) => {
+      if (el.style.opacity === "0.3") el.style.opacity = "";
+    });
     originPiece = null;
     originCell = null;
     dragging = false;
