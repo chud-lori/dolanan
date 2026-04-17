@@ -1,0 +1,135 @@
+/* Congklak / Dakon — traditional Indonesian mancala.
+   The board is a horizontal "boat" shape: two stores (rumah) at the ends,
+   7 pits per player in the middle. */
+
+.ck-board-wrap {
+  display: flex;
+  justify-content: center;
+  padding: 8px 0;
+}
+
+.ck-board {
+  display: grid;
+  /* 9 columns: store – 7 pits – store */
+  grid-template-columns: minmax(40px, 1fr) repeat(7, 1fr) minmax(40px, 1fr);
+  grid-template-rows: 1fr 1fr;
+  gap: 4px;
+  width: min(98vw, 580px);
+  aspect-ratio: 3;
+  background: linear-gradient(135deg, #8b5e34 0%, #6d4c2e 50%, #4a3320 100%);
+  border: 3px solid #3b2313;
+  border-radius: 999px;
+  padding: 10px 12px;
+  box-shadow: var(--shadow), inset 0 2px 6px rgba(255, 255, 255, 0.15);
+}
+
+/* ---- Stores (rumah) ---- */
+.ck-store {
+  border-radius: 999px;
+  background: #5c3a1e;
+  border: 2px solid #3b2313;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: clamp(20px, 5vw, 30px);
+  font-weight: 800;
+  color: #fef3c7;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+  cursor: default;
+  position: relative;
+}
+
+/* P2 store spans left column, both rows */
+.ck-store-p2 {
+  grid-column: 1;
+  grid-row: 1 / span 2;
+}
+
+/* P1 store spans right column, both rows */
+.ck-store-p1 {
+  grid-column: 9;
+  grid-row: 1 / span 2;
+}
+
+/* ---- Pits (lubang) ---- */
+.ck-pit {
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 35%, #7c5030, #4a3320 80%);
+  border: 2px solid #3b2313;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: clamp(14px, 4vw, 22px);
+  font-weight: 700;
+  color: #fef3c7;
+  cursor: default;
+  transition: transform 0.15s ease-out, box-shadow 0.2s;
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+}
+
+.ck-pit.clickable {
+  cursor: pointer;
+  box-shadow: 0 0 0 2px rgba(251, 191, 36, 0.6);
+}
+
+.ck-pit.clickable:hover {
+  transform: scale(1.08);
+  box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.9), 0 0 12px rgba(251, 191, 36, 0.5);
+}
+
+.ck-pit.clickable:active {
+  transform: scale(0.95);
+}
+
+.ck-pit.empty {
+  color: rgba(254, 243, 199, 0.3);
+}
+
+/* Sowing animation: briefly highlight the pit receiving a seed */
+.ck-pit.drop-flash, .ck-store.drop-flash {
+  animation: ck-drop 0.25s ease-out;
+}
+
+@keyframes ck-drop {
+  0% { box-shadow: inset 0 0 8px rgba(251, 191, 36, 0.8); }
+  100% { box-shadow: none; }
+}
+
+/* P2 pits: top row, columns 2-8 (right to left visually) */
+.ck-pit[data-side="2"] { grid-row: 1; }
+
+/* P1 pits: bottom row, columns 2-8 */
+.ck-pit[data-side="1"] { grid-row: 2; }
+
+/* Seed count label */
+.ck-count {
+  position: relative;
+  z-index: 1;
+}
+
+/* Small seed dot indicators (max 7 shown) */
+.ck-seeds {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  padding: 15%;
+  pointer-events: none;
+}
+
+.ck-seed {
+  width: clamp(4px, 1.2vw, 7px);
+  height: clamp(4px, 1.2vw, 7px);
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, #fbbf24, #92400e);
+  box-shadow: 0 0.5px 1px rgba(0, 0, 0, 0.3);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ck-pit.drop-flash, .ck-store.drop-flash { animation: none; }
+}

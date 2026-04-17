@@ -24,7 +24,7 @@
 }
 
 /* Small utility buttons that sit in the game header next to the lang seg. */
-.fx-mute, .howto-btn {
+.fx-mute, .howto-btn, .theme-btn {
   padding: 0;
   width: 36px;
   height: 36px;
@@ -147,11 +147,12 @@
   padding: 8px;
 }
 
-/* Square grid board */
+/* Square grid board — the gap between cells is the board's own background.
+   Use --border (not --bg-2) so that in dark mode cells are distinguishable. */
 .board {
   display: grid;
   gap: 2px;
-  background: var(--bg-2);
+  background: var(--border);
   padding: 6px;
   border-radius: var(--radius);
   box-shadow: var(--shadow);

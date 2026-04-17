@@ -7,6 +7,7 @@
 import { register, t } from "/shared/i18n.js";
 import { wireGameHead } from "/shared/game-head.js";
 import { fx } from "/shared/fx.js";
+import { rememberNames } from "/shared/names.js";
 
 register("bs", {
   en: {

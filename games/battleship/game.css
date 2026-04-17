@@ -19,7 +19,7 @@
 }
 
 .bs-cell {
-  background: #cfe7ff;
+  background: var(--bg-2);
   border: none;
   aspect-ratio: 1;
   cursor: pointer;

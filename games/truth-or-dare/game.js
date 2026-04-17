@@ -4,6 +4,8 @@
 import { storage } from "/shared/storage.js";
 import { register, t, getLang } from "/shared/i18n.js";
 import { wireGameHead } from "/shared/game-head.js";
+import { fx } from "/shared/fx.js";
+import { attachNameSuggestions, rememberNames } from "/shared/names.js";
 import { PROMPTS } from "./prompts.js";
 
 register("td", {
@@ -39,7 +41,31 @@ register("td", {
   },
 });
 
-wireGameHead({ titleEn: "Truth or Dare", titleId: "Jujur atau Berani", subtitleKey: "td.subtitle" });
+wireGameHead({
+  titleEn: "Truth or Dare",
+  titleId: "Jujur atau Berani",
+  subtitleKey: "td.subtitle",
+  rules: {
+    en: `
+      <h3>How to play</h3>
+      <ul>
+        <li>Enter player names and tap Start.</li>
+        <li>On your turn, choose <strong>Truth</strong>, <strong>Dare</strong>, or <strong>Random</strong>.</li>
+        <li>Read the prompt aloud and answer / do it.</li>
+        <li>Tap <em>Pass to next</em> and hand the phone to the next player.</li>
+      </ul>
+      <p>Prompts are safe and friendly. Switch language to swap EN ↔ ID prompt pools.</p>`,
+    id: `
+      <h3>Cara main</h3>
+      <ul>
+        <li>Isi nama pemain lalu tekan Mulai.</li>
+        <li>Pas giliranmu, pilih <strong>Jujur</strong>, <strong>Berani</strong>, atau <strong>Acak</strong>.</li>
+        <li>Baca tantangannya dan jawab / lakukan.</li>
+        <li>Tekan <em>Kasih ke berikutnya</em> dan oper HP ke pemain selanjutnya.</li>
+      </ul>
+      <p>Semua tantangan aman dan bersahabat. Ganti bahasa untuk tukar daftar tantangan ID ↔ EN.</p>`,
+  },
+});
 
 const root = document.getElementById("td-root");
 const RECENT_KEY = "td:recent";
@@ -88,6 +114,7 @@ function renderSetup() {
     startBtn.disabled = !ok;
   };
 
+  const allInputs = [];
   state.players.forEach((name, i) => {
     const wrap = document.createElement("div");
     wrap.style.display = "flex";
@@ -97,6 +124,7 @@ function renderSetup() {
       <button type="button" class="btn btn-ghost" aria-label="remove">✕</button>
     `;
     const input = wrap.querySelector("input");
+    allInputs.push(input);
     input.addEventListener("input", () => {
       state.players[i] = input.value;
       storage.set("td:players", state.players);
@@ -111,13 +139,16 @@ function renderSetup() {
     namesEl.appendChild(wrap);
   });
 
+  attachNameSuggestions(allInputs);
   root.querySelector("#add").addEventListener("click", () => {
     state.players.push("");
     renderSetup();
   });
   root.querySelector("#start").addEventListener("click", () => {
     state.players = state.players.filter((n) => n.trim());
+    rememberNames(state.players);
     state.idx = 0;
+    fx.play("click"); fx.haptic("tap");
     renderPick();
   });
 }
@@ -136,9 +167,9 @@ function renderPick() {
       </div>
     </div>
   `;
-  root.querySelector("#truth").addEventListener("click", () => show("truth"));
-  root.querySelector("#dare").addEventListener("click", () => show("dare"));
-  root.querySelector("#random").addEventListener("click", () => show(Math.random() < 0.5 ? "truth" : "dare"));
+  root.querySelector("#truth").addEventListener("click", () => { fx.play("click"); fx.haptic("tap"); show("truth"); });
+  root.querySelector("#dare").addEventListener("click", () => { fx.play("click"); fx.haptic("tap"); show("dare"); });
+  root.querySelector("#random").addEventListener("click", () => { fx.play("roll"); fx.haptic("roll"); show(Math.random() < 0.5 ? "truth" : "dare"); });
 }
 
 function show(kind) {

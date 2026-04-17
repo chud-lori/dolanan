@@ -189,7 +189,12 @@ function drawEdge(kind, r, c) {
     if (c < size) claimed += maybeClaim(r, c);
   }
 
-  if (claimed === 0) current = current === 1 ? 2 : 1;
+  if (claimed > 0) {
+    fx.play("capture"); fx.haptic("capture");
+  } else {
+    fx.play("click"); fx.haptic("tap");
+    current = current === 1 ? 2 : 1;
+  }
 
   // Done?
   if (scores[1] + scores[2] === size * size) {
@@ -202,6 +207,7 @@ function drawEdge(kind, r, c) {
       const winner = scores[1] > scores[2] ? 1 : 2;
       statusEl.textContent = t("db.win", { p: playerName(winner), n: total });
       statusEl.className = "status-banner win";
+      fx.play("win"); fx.haptic("win");
     }
     statusEl.hidden = false;
   }
