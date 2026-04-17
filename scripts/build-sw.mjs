@@ -115,6 +115,29 @@ self.addEventListener("fetch", (e) => {
   const url = new URL(req.url);
   if (url.origin !== self.location.origin) return;
 
+  // HTML navigations: network-first so a normal phone reload always pulls the
+  // latest page. Fall back to the cache only when offline. This makes deploys
+  // reach users on the first reload instead of requiring a hard refresh.
+  if (req.mode === "navigate") {
+    e.respondWith(
+      fetch(req)
+        .then((res) => {
+          if (res && res.status === 200) {
+            const copy = res.clone();
+            caches.open(VERSION).then((c) => c.put(req, copy));
+          }
+          return res;
+        })
+        .catch(() =>
+          caches.match(req).then((m) => m || caches.match("/offline.html"))
+        )
+    );
+    return;
+  }
+
+  // Assets (JS / CSS / images / JSON): cache-first. The SW auto-update flow
+  // swaps the cache atomically on VERSION bump, so once the new SW activates,
+  // all assets are the new version in lockstep.
   e.respondWith(
     caches.match(req).then((cached) => {
       if (cached) return cached;
@@ -126,10 +149,7 @@ self.addEventListener("fetch", (e) => {
           }
           return res;
         })
-        .catch(() => {
-          if (req.mode === "navigate") return caches.match("/offline.html");
-          return new Response("", { status: 504 });
-        });
+        .catch(() => new Response("", { status: 504 }));
     }),
   );
 });
