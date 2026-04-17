@@ -705,7 +705,9 @@ const turnPill = document.getElementById("turn-pill");
 
 function startGame(mode) {
   botMode = mode === "bot";
-  botDifficulty = diffSelect.value;
+  // botDifficulty is set by the difficulty segmented toggle handler; default
+  // to "medium" if never touched.
+  botDifficulty = botDifficulty || "medium";
   botBusy = false;
   state = initialState();
   selected = null;
