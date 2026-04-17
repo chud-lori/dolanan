@@ -1,6 +1,6 @@
-// Hangman — 1+ players, offline word list (EN + ID), 6 wrong guesses allowed.
-// Input: hidden focused <input> so mobile pops up the device keyboard; desktop
-// just types. A "tried letters" strip shows what's been guessed (hits vs misses).
+// Hangman — 1+ players, offline word list (EN + ID + JW), 6 wrong guesses allowed.
+// On-screen A–Z keyboard with hit/miss state baked into the keys. Desktop keydown
+// still works so you can type instead of tapping.
 
 import { storage } from "/shared/storage.js";
 import { register, t, getLang } from "/shared/i18n.js";
@@ -23,8 +23,6 @@ register("hm", {
     cat_makanan: "Food",
     cat_teknologi: "Tech",
     cat_alam: "Nature",
-    hint: "Tap here and type a letter",
-    tried: "Tried",
   },
   id: {
     subtitle: "6 kali salah = tamat. Semangat!",
@@ -40,8 +38,6 @@ register("hm", {
     cat_makanan: "Makanan",
     cat_teknologi: "Teknologi",
     cat_alam: "Alam",
-    hint: "Tap di sini, ketik huruf tebakan",
-    tried: "Sudah dicoba",
   },
 });
 
@@ -55,8 +51,9 @@ wireGameHead({
       <p>Guess the hidden word one letter at a time. Six wrong guesses and the figure is complete — game over.</p>
       <h3>Play</h3>
       <ul>
-        <li>Tap the input zone, then type letters on your device keyboard.</li>
+        <li>Tap letters on the on-screen keyboard — or type on your physical keyboard.</li>
         <li>Correct letters fill in; wrong letters add a body part to the gallows.</li>
+        <li>Keys turn green for hits, red for misses, and are disabled once tried.</li>
         <li>Cycle categories (Animals, Food, Tech, Nature) with the <em>Change</em> button.</li>
         <li>Switch language to swap word lists (English ↔ Indonesian).</li>
       </ul>`,
@@ -65,8 +62,9 @@ wireGameHead({
       <p>Tebak kata tersembunyi satu huruf per giliran. Salah enam kali = tamat.</p>
       <h3>Cara main</h3>
       <ul>
-        <li>Tap area input, lalu ketik huruf pakai keyboard HP.</li>
+        <li>Tap huruf di keyboard layar — atau ketik di keyboard fisik.</li>
         <li>Huruf benar terisi; huruf salah menambah bagian tubuh ke tiang.</li>
+        <li>Tombol jadi hijau kalau kena, merah kalau meleset, dan mati setelah dicoba.</li>
         <li>Tukar kategori (Hewan, Makanan, Teknologi, Alam) lewat tombol <em>Ganti</em>.</li>
         <li>Ganti bahasa untuk ganti daftar kata (Indonesia ↔ Inggris).</li>
       </ul>`,
@@ -74,9 +72,7 @@ wireGameHead({
 });
 
 const wordEl = document.getElementById("word");
-const triedEl = document.getElementById("tried");
-const hiddenInput = document.getElementById("guess-input");
-const hintLabel = document.getElementById("guess-hint");
+const keyboardEl = document.getElementById("keyboard");
 const catLabelEl = document.getElementById("cat-label");
 const catBtn = document.getElementById("cat-change");
 const statusEl = document.getElementById("status");
@@ -84,18 +80,23 @@ const turnLabel = document.getElementById("turn-label");
 
 const RECENT_KEY = "hm:recent";
 const MAX_WRONG = 6;
+const ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
 let target, guessed, wrong, categoryKey;
 
-function pickCategory() {
+function wordLang() {
   const lang = getLang();
-  const cats = Object.keys(WORDS[lang]);
+  return WORDS[lang] ? lang : "en";
+}
+
+function pickCategory() {
+  const cats = Object.keys(WORDS[wordLang()]);
   return cats[Math.floor(Math.random() * cats.length)];
 }
 
 function pickWord(category) {
-  const lang = getLang();
-  const bucket = WORDS[lang][category] || Object.values(WORDS[lang])[0];
+  const dict = WORDS[wordLang()];
+  const bucket = dict[category] || Object.values(dict)[0];
   const recent = storage.get(RECENT_KEY, []);
   const pool = bucket.filter((w) => !recent.includes(w));
   const candidates = pool.length ? pool : bucket;
@@ -106,7 +107,7 @@ function pickWord(category) {
 }
 
 function newRound({ keepCategory = false } = {}) {
-  if (!keepCategory || !categoryKey || !WORDS[getLang()][categoryKey]) {
+  if (!keepCategory || !categoryKey || !WORDS[wordLang()][categoryKey]) {
     categoryKey = pickCategory();
   }
   target = pickWord(categoryKey);
@@ -114,11 +115,23 @@ function newRound({ keepCategory = false } = {}) {
   wrong = 0;
   statusEl.hidden = true;
   render();
-  focusInput();
+}
+
+function renderKeyboard() {
+  const over = isOver();
+  keyboardEl.innerHTML = ALPHABET.split("")
+    .map((ch) => {
+      let cls = "hm-key";
+      if (guessed.has(ch)) {
+        cls += target.includes(ch) ? " hit" : " miss";
+      }
+      const disabled = guessed.has(ch) || over ? "disabled" : "";
+      return `<button type="button" class="${cls}" data-letter="${ch}" ${disabled}>${ch}</button>`;
+    })
+    .join("");
 }
 
 function render() {
-  // Hidden word
   wordEl.innerHTML = target
     .split("")
     .map((ch) => {
@@ -127,30 +140,14 @@ function render() {
     })
     .join("");
 
-  // Tried letters strip
-  const tried = [...guessed].sort();
-  if (tried.length === 0) {
-    triedEl.innerHTML = `<span class="hm-tried-label">${t("hm.tried")}:</span> <span class="hm-tried-none">—</span>`;
-  } else {
-    triedEl.innerHTML =
-      `<span class="hm-tried-label">${t("hm.tried")}:</span> ` +
-      tried
-        .map((l) => {
-          const cls = target.includes(l) ? "hit" : "miss";
-          return `<span class="hm-tried-chip ${cls}">${l}</span>`;
-        })
-        .join("");
-  }
+  renderKeyboard();
 
-  // Gallows
   document.querySelectorAll("#gallows .part").forEach((el, i) => {
     el.classList.toggle("on", i < wrong);
   });
 
-  // Category + labels
   catLabelEl.textContent = `${t("hm.category")}: ${t("hm.cat_" + categoryKey)}`;
   catBtn.textContent = t("hm.change");
-  hintLabel.textContent = t("hm.hint");
 
   turnLabel.textContent = t("hm.wrongs", { n: wrong });
   const dot = document.querySelector("#turn-pill .turn-dot");
@@ -165,9 +162,6 @@ function render() {
       statusEl.textContent = t("hm.lose", { w: target });
       statusEl.className = "status-banner draw";
     }
-    hiddenInput.disabled = true;
-  } else {
-    hiddenInput.disabled = false;
   }
 }
 
@@ -191,39 +185,24 @@ function isOver() {
   return isWin() || wrong >= MAX_WRONG;
 }
 
-function focusInput() {
-  // Don't auto-show the mobile keyboard — only open it when the user taps.
-  hiddenInput.value = "";
-}
-
 // ---- Input wiring ----
 
-// Keep the input empty after every keystroke so the next letter fires `input`.
-hiddenInput.addEventListener("input", () => {
-  const v = hiddenInput.value.toUpperCase();
-  hiddenInput.value = "";
-  for (const ch of v) {
-    if (/[A-Z]/.test(ch)) guess(ch);
-    if (isOver()) break;
-  }
+keyboardEl.addEventListener("click", (e) => {
+  const btn = e.target.closest(".hm-key");
+  if (!btn || btn.disabled) return;
+  guess(btn.dataset.letter);
 });
 
-// Desktop support — catch physical keyboard too in case input isn't focused.
+// Desktop — physical keyboard still works.
 document.addEventListener("keydown", (e) => {
   if (e.key.length !== 1) return;
-  if (document.activeElement === hiddenInput) return; // input handler takes over
+  if (e.ctrlKey || e.metaKey || e.altKey) return;
   const l = e.key.toUpperCase();
   if (/[A-Z]/.test(l)) guess(l);
 });
 
-// Tapping the tried-strip / hint opens the keyboard on mobile
-document.getElementById("input-zone").addEventListener("click", () => {
-  hiddenInput.focus();
-});
-
 catBtn.addEventListener("click", () => {
-  const lang = getLang();
-  const cats = Object.keys(WORDS[lang]);
+  const cats = Object.keys(WORDS[wordLang()]);
   const idx = cats.indexOf(categoryKey);
   categoryKey = cats[(idx + 1) % cats.length];
   newRound({ keepCategory: true });
