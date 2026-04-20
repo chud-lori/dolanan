@@ -1,7 +1,11 @@
+/* ========================================================================
+   Halma — styles for two variants on the same #board element.
+   `.hl-classical` → 16×16 square grid with corner camps.
+   `.hl-star`      → triangular lattice, 6 colored triangles + central hex.
+   The two classes are mutually exclusive; game.js toggles them.
+   ======================================================================== */
+
 .hl-board {
-  display: grid;
-  grid-template-columns: repeat(16, 1fr);
-  grid-template-rows: repeat(16, 1fr);
   width: min(96vw, 70vh, 600px);
   aspect-ratio: 1;
   background: var(--card);
@@ -13,6 +17,14 @@
   /* `none` (not `manipulation`) so a touch-drag on a piece doesn't scroll the
      page — required for the shared drag-and-drop helper to fire pointermove. */
   touch-action: none;
+}
+
+/* -------------------- CLASSICAL (square) -------------------- */
+
+.hl-board.hl-classical {
+  display: grid;
+  grid-template-columns: repeat(16, 1fr);
+  grid-template-rows: repeat(16, 1fr);
 }
 
 .hl-cell {
@@ -47,6 +59,69 @@
 
 .hl-cell.last { box-shadow: inset 0 0 0 3px rgba(16, 185, 129, 0.55); }
 
+/* -------------------- STAR (triangular lattice) -------------------- */
+
+/* Star board: aspect is 24 (half-cols) : 16√3 (rows) ≈ 24 : 27.71 ≈ 0.866.
+   Render container has aspect 1 for visual parity with classical; the SVG
+   background is stretched to fit via preserveAspectRatio="none" so the
+   triangles and dot layout align exactly. */
+.hl-board.hl-star {
+  position: relative;
+  background: var(--card);
+  overflow: visible;
+}
+
+/* SVG triangle background, fills board exactly. */
+.hl-star-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+.hl-tri.T  { fill: rgba(239, 68, 68, 0.30); }
+.hl-tri.UR { fill: rgba(234, 179, 8, 0.30); }
+.hl-tri.LR { fill: rgba(16, 185, 129, 0.30); }
+.hl-tri.B  { fill: rgba(59, 130, 246, 0.30); }
+.hl-tri.LL { fill: rgba(168, 85, 247, 0.30); }
+.hl-tri.UL { fill: rgba(249, 115, 22, 0.30); }
+.hl-hex    { fill: rgba(255, 255, 255, 0.10); stroke: rgba(0,0,0,0.08); stroke-width: 0.08; }
+
+/* Dots — positions on the triangular lattice. Buttons sized as % of board
+   so they scale with any container width. */
+.hl-dot {
+  position: absolute;
+  width: 6.5%;
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  border: 1.5px solid rgba(15, 23, 42, 0.35);
+  background: var(--card);
+  border-radius: 50%;
+  padding: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+}
+.hl-dot.selected {
+  border-color: #f59e0b;
+  box-shadow: 0 0 0 2px #f59e0b;
+  z-index: 3;
+}
+.hl-dot.hint::after {
+  content: "";
+  position: absolute;
+  inset: 20%;
+  background: rgba(16, 185, 129, 0.85);
+  border-radius: 50%;
+}
+.hl-dot.last {
+  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.55);
+}
+
+/* -------------------- Pieces (both variants) -------------------- */
+
 .hl-piece {
   width: 82%;
   height: 82%;
@@ -58,3 +133,15 @@
 
 .hl-piece.R { background: radial-gradient(circle at 30% 30%, #f87171, #b91c1c); }
 .hl-piece.B { background: radial-gradient(circle at 30% 30%, #60a5fa, #1e40af); }
+.hl-piece.G { background: radial-gradient(circle at 30% 30%, #34d399, #047857); }
+.hl-piece.Y { background: radial-gradient(circle at 30% 30%, #fcd34d, #a16207); }
+.hl-piece.P { background: radial-gradient(circle at 30% 30%, #c084fc, #6b21a8); }
+.hl-piece.O { background: radial-gradient(circle at 30% 30%, #fb923c, #9a3412); }
+
+/* Turn pill dots — one class per player color. */
+.turn-dot.red    { background: #ef4444; }
+.turn-dot.blue   { background: #3b82f6; }
+.turn-dot.green  { background: #10b981; }
+.turn-dot.yellow { background: #eab308; }
+.turn-dot.purple { background: #a855f7; }
+.turn-dot.orange { background: #f97316; }

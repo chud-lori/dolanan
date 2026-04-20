@@ -41,21 +41,38 @@
           <h1 class="game-title">Halma</h1>
           <p class="game-subtitle"></p>
         </div>
-        <div id="turn-pill" class="turn-pill">
+        <div id="turn-pill" class="turn-pill" hidden>
           <span class="turn-dot red"></span>
           <span id="turn-label"></span>
         </div>
       </header>
 
-      <div class="board-wrap">
-        <div id="board" class="hl-board" aria-label="Halma board"></div>
+      <div id="setup" class="card" style="text-align: center;">
+        <h2 data-i18n="hl.pickVariant">Pick a variant</h2>
+        <div class="row" style="justify-content: center; flex-direction: column; gap: 12px;">
+          <button class="btn btn-primary" data-variant="classical" data-n="2" data-i18n="hl.classical2">Classical · 2 players</button>
+          <div style="height: 8px;"></div>
+          <div class="game-subtitle" data-i18n="hl.starHeading" style="margin: 0;">Star (Indonesian)</div>
+          <div class="row" style="justify-content: center; gap: 8px; flex-wrap: wrap;">
+            <button class="btn btn-primary" data-variant="star" data-n="2">2</button>
+            <button class="btn btn-primary" data-variant="star" data-n="3">3</button>
+            <button class="btn btn-primary" data-variant="star" data-n="4">4</button>
+            <button class="btn btn-primary" data-variant="star" data-n="6">6</button>
+          </div>
+        </div>
       </div>
 
-      <div id="status" class="status-banner" hidden></div>
+      <div id="play" hidden>
+        <div class="board-wrap">
+          <div id="board" class="hl-board" aria-label="Halma board"></div>
+        </div>
 
-      <div class="row" style="justify-content: center; margin-top: 12px;">
-        <button id="end-jump" type="button" class="btn btn-secondary" hidden data-i18n="hl.endJump">End jump</button>
-        <button id="reset" type="button" class="btn btn-primary" data-i18n="btn.newGame">New game</button>
+        <div id="status" class="status-banner" hidden></div>
+
+        <div class="row" style="justify-content: center; margin-top: 12px;">
+          <button id="end-jump" type="button" class="btn btn-secondary" hidden data-i18n="hl.endJump">End jump</button>
+          <button id="reset" type="button" class="btn btn-primary" data-i18n="btn.newGame">New game</button>
+        </div>
       </div>
     </main>
   </body>
