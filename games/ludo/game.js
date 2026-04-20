@@ -33,41 +33,123 @@ function doOnce(fn) {
   return () => { if (!called) { called = true; fn(); } };
 }
 
-// FLIP slide: compare the just-rendered DOM element's pixel rect with the
-// one captured before the move, then transiently apply an inverse transform
-// and animate it away. Preserves any existing inline transform (e.g. the
-// stack offset applied when multiple tokens share a cell) by composing with it.
-function animateFlip(boardEl, color, idx, oldRect, onDone) {
+// Step-by-step pawn walk + kick-back animation for captured pawns.
+//
+// The walker transform-translates through each waypoint along its path. Any
+// pawn that moveToken sent back to base (`capturedInfo`) has already been
+// re-rendered at its base cell; we snap each of those back to the capture
+// cell visually (so they're *there* while the walker is approaching), and
+// once the walker arrives we release the snap and let them slide — with a
+// slight overshoot — to their natural base position. The "kick" reads as:
+// walker lands on cell → opponent(s) launch off toward their base.
+async function animatePath(boardEl, color, idx, oldRect, waypointRects, capturedInfo, onDone) {
   const done = onDone ? doOnce(onDone) : null;
-  // Honor user accessibility preference — skip the slide, hand off immediately.
+
+  // Respect OS-level "reduce motion" — skip straight to the resting state.
   if (window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches) {
     done?.();
     return;
   }
-  if (!oldRect) { done?.(); return; }
-  const newEl = boardEl.querySelector(`.lu-tok.${color}[data-idx="${idx}"]`);
-  if (!newEl) { done?.(); return; }
-  const newRect = newEl.getBoundingClientRect();
-  const dx = oldRect.left - newRect.left;
-  const dy = oldRect.top - newRect.top;
-  if (Math.abs(dx) < 1 && Math.abs(dy) < 1) { done?.(); return; }
 
-  const baseTransform = newEl.style.transform || "";
-  newEl.style.transition = "none";
-  newEl.style.transform = `translate(${dx}px, ${dy}px) ${baseTransform}`.trim();
-  // Force the browser to commit the "snapped-back" state before we start the
-  // transition. Without this read, the two style writes can be coalesced and
-  // the element appears to jump straight to the destination with no slide.
-  void newEl.offsetWidth;
+  // Snap each captured pawn to its pre-capture cell so it stays visible
+  // there while the walker is approaching; we'll release these below once
+  // the walker arrives at the target cell.
+  const capturedEls = [];
+  for (const cap of (capturedInfo || [])) {
+    if (!cap.fromRect) continue;
+    const el = boardEl.querySelector(`.lu-tok.${cap.color}[data-idx="${cap.idx}"]`);
+    if (!el) continue;
+    const baseRect = el.getBoundingClientRect();
+    const dx = cap.fromRect.left - baseRect.left;
+    const dy = cap.fromRect.top - baseRect.top;
+    el.style.transition = "none";
+    el.style.transform = `translate(${dx}px, ${dy}px)`;
+    // Keep captured pawn visually BELOW the walker so the walker appears to
+    // land on top and knock it away (rather than obscuring the walker).
+    el.style.zIndex = "1";
+    void el.offsetWidth;
+    capturedEls.push(el);
+  }
 
-  requestAnimationFrame(() => {
-    newEl.style.transition = "transform 360ms cubic-bezier(0.4, 0, 0.2, 1)";
-    newEl.style.transform = baseTransform;
-    if (done) {
-      newEl.addEventListener("transitionend", done, { once: true });
-      setTimeout(done, 500);
-    }
-  });
+  if (!oldRect || !waypointRects?.length) {
+    // Nothing for the walker to do — still animate any captures out of here.
+    await animateKickedHome(capturedEls);
+    done?.();
+    return;
+  }
+  const walker = boardEl.querySelector(`.lu-tok.${color}[data-idx="${idx}"]`);
+  if (!walker) {
+    await animateKickedHome(capturedEls);
+    done?.();
+    return;
+  }
+  const finalRect = walker.getBoundingClientRect();
+  const baseTransform = walker.style.transform || "";
+
+  // Snap the walker back to its starting cell so the first hop animates
+  // from the correct origin.
+  const dx0 = oldRect.left - finalRect.left;
+  const dy0 = oldRect.top - finalRect.top;
+  walker.style.transition = "none";
+  walker.style.transform = `translate(${dx0}px, ${dy0}px)`;
+  void walker.offsetWidth;
+
+  const total = waypointRects.length;
+  const stepMs = total === 1 ? 260 : 140;
+
+  for (let i = 0; i < total; i++) {
+    const r = waypointRects[i];
+    const isLast = i === total - 1;
+    const dx = r.left - finalRect.left;
+    const dy = r.top - finalRect.top;
+    const easing = total === 1
+      ? "cubic-bezier(0.4, 0, 0.2, 1)"
+      : (isLast ? "cubic-bezier(0.2, 0.7, 0.3, 1)" : "linear");
+
+    walker.style.transition = `transform ${stepMs}ms ${easing}`;
+    walker.style.transform = isLast
+      ? baseTransform
+      : `translate(${dx}px, ${dy}px)`;
+
+    await new Promise((resolve) => {
+      let called = false;
+      const finish = () => {
+        if (called) return;
+        called = true;
+        walker.removeEventListener("transitionend", finish);
+        resolve();
+      };
+      walker.addEventListener("transitionend", finish);
+      setTimeout(finish, stepMs + 120);
+    });
+  }
+
+  // Walker has landed — kick the captured pawns off toward their home bases.
+  await animateKickedHome(capturedEls);
+
+  done?.();
+}
+
+// Each captured pawn was pre-snapped to its capture cell. Transitioning
+// transform back to "" releases it to its natural (base cell) position.
+// The overshoot easing gives a satisfying "bounced back" feel.
+function animateKickedHome(els) {
+  if (!els?.length) return Promise.resolve();
+  return Promise.all(els.map((el) => new Promise((resolve) => {
+    el.style.transition = "transform 420ms cubic-bezier(0.34, 1.56, 0.64, 1)";
+    el.style.transform = "";
+    let called = false;
+    const finish = () => {
+      if (called) return;
+      called = true;
+      el.removeEventListener("transitionend", finish);
+      el.style.transition = "";
+      el.style.zIndex = "";
+      resolve();
+    };
+    el.addEventListener("transitionend", finish);
+    setTimeout(finish, 550);
+  })));
 }
 import { register, t } from "/shared/i18n.js";
 import { wireGameHead } from "/shared/game-head.js";
@@ -422,6 +504,39 @@ async function doRoll() {
   }
   hintEl.textContent = t("lu.hintPick", { n: face });
   render();
+
+  // UX: when there's only one possible move, don't ask the player to pick —
+  // auto-select it after a short pause so they still see the glow + hint
+  // update. Runs through the same onTokenClick path so the walk animation
+  // and bonus/turn logic stay identical to a manual click.
+  if (movable.length === 1) {
+    setTimeout(() => {
+      if (state.animating || state.done) return;
+      onTokenClick(currentColor(), movable[0]);
+    }, 500);
+  }
+}
+
+// Compute the pixel rect for every cell the pawn passes through on this move.
+// Must be called BEFORE moveToken+render mutate state/DOM (we read rects off
+// the currently-rendered cells). For a token leaving base the path is a single
+// hop onto the entry square; otherwise the pawn walks through positions
+// startPos+1, startPos+2, ..., startPos+roll (which may cross from the track
+// into the home column — cellForPos handles that seamlessly).
+function computeWaypointRects(color, tokenIdx, startPos, roll) {
+  const stops = [];
+  if (startPos === -1) {
+    stops.push(0);
+  } else {
+    for (let s = 1; s <= roll; s++) stops.push(startPos + s);
+  }
+  const rects = [];
+  for (const pos of stops) {
+    const [r, c] = cellForPos(color, tokenIdx, pos);
+    const cellEl = boardEl.querySelector(`.lu-cell[data-r="${r}"][data-c="${c}"]`);
+    if (cellEl) rects.push(cellEl.getBoundingClientRect());
+  }
+  return rects;
 }
 
 function onTokenClick(color, idx) {
@@ -432,43 +547,61 @@ function onTokenClick(color, idx) {
   const movable = movableTokens(color, state.roll);
   if (!movable.includes(idx)) return;
 
-  // FLIP step 1: capture old DOM position before state/DOM mutation.
+  // --- Snapshot everything the animation needs BEFORE state mutates. ---
+  const startPos = state.players[color].tokens[idx];
   const oldEl = boardEl.querySelector(`.lu-tok.${color}[data-idx="${idx}"]`);
   const oldRect = oldEl ? oldEl.getBoundingClientRect() : null;
-
+  const waypointRects = computeWaypointRects(color, idx, startPos, state.roll);
   const rolledSix = state.roll === 6;
-  const { captured } = moveToken(color, idx, state.roll);
 
-  if (state.done) {
-    render();
-    animateFlip(boardEl, color, idx, oldRect);
-    return;
+  // Snapshot every opponent pawn's current state + DOM rect. We don't know
+  // yet which (if any) moveToken will knock back to base; we diff afterwards.
+  const beforeTokens = {};
+  const opponentRects = new Map();
+  for (const c of state.colors) {
+    beforeTokens[c] = [...state.players[c].tokens];
+    if (c === color) continue;
+    for (let j = 0; j < 4; j++) {
+      const el = boardEl.querySelector(`.lu-tok.${c}[data-idx="${j}"]`);
+      if (el) opponentRects.set(`${c}:${j}`, el.getBoundingClientRect());
+    }
   }
 
-  const bonus = rolledSix || captured;
+  const { captured } = moveToken(color, idx, state.roll);
+
+  // Diff: any opponent token that moved from on-track to -1 was captured.
+  const capturedInfo = [];
+  for (const c of state.colors) {
+    if (c === color) continue;
+    for (let j = 0; j < 4; j++) {
+      if (beforeTokens[c][j] !== -1 && state.players[c].tokens[j] === -1) {
+        capturedInfo.push({
+          color: c,
+          idx: j,
+          fromRect: opponentRects.get(`${c}:${j}`) || null,
+        });
+      }
+    }
+  }
+
+  const gameOver = state.done;
+  const bonus = !gameOver && (rolledSix || captured);
+
   if (bonus) {
     hintEl.textContent = rolledSix ? t("lu.hintSix") : t("lu.hintCapture");
     state.rolledThisTurn = false;
     state.roll = null;
-    rollBtn.disabled = false;
-    // Lock further input while the slide plays.
-    state.animating = true;
-    render();
-    animateFlip(boardEl, color, idx, oldRect, () => {
-      state.animating = false;
-      render();
-    });
-  } else {
-    // Render final resting state, slide the pawn, then hand off to endTurn
-    // only after the slide finishes (otherwise endTurn's re-render kills the
-    // animation mid-flight).
-    state.animating = true;
-    render();
-    animateFlip(boardEl, color, idx, oldRect, () => {
-      state.animating = false;
-      endTurn();
-    });
   }
+
+  // Lock out concurrent clicks/rolls until the walk + kicks finish.
+  state.animating = true;
+  render();
+  animatePath(boardEl, color, idx, oldRect, waypointRects, capturedInfo, () => {
+    state.animating = false;
+    if (gameOver) { render(); return; }
+    if (bonus) render();      // refresh so rollBtn re-enables + glow updates
+    else endTurn();           // advance turn + re-render
+  });
 }
 
 // ---- Rendering -------------------------------------------------------------
