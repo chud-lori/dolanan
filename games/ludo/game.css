@@ -169,15 +169,19 @@
 .lu-base-spot {
   position: relative;
 }
+/* White seat for a token at rest. Must be LARGER than the token so it reads
+   as a visible halo around same-colored tokens on same-colored bases
+   (otherwise red-on-red / yellow-on-yellow etc. blend together). */
 .lu-base-spot::after {
   content: "";
   position: absolute;
-  inset: 14%;
+  inset: 4%;
   border-radius: 50%;
   background: #fff;
-  border: 1.5px solid rgba(15, 23, 42, 0.15);
+  border: 2px solid rgba(15, 23, 42, 0.2);
   pointer-events: none;
   z-index: 0;
+  box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.08);
 }
 
 /* Entry/safe squares on the track colored per player */
@@ -215,13 +219,16 @@
 .lu-center.B { background: linear-gradient(45deg,  #3b82f6 50%, transparent 50%); }
 .lu-center.mid { background: var(--card); border: 1px solid var(--secondary); }
 
-/* Tokens sitting on a cell (home base, track, home column, or finish area) */
+/* Tokens sitting on a cell (home base, track, home column, or finish area).
+   inset 10% so the white base-spot halo (inset 4%) remains visible behind. */
 .lu-tok {
   position: absolute;
-  inset: 12%;
+  inset: 10%;
   border-radius: 50%;
-  border: 2px solid #fff;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+  border: 2.5px solid #fff;
+  box-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.4),
+    inset 0 -2px 0 rgba(0, 0, 0, 0.2);
   display: flex;
   align-items: center;
   justify-content: center;

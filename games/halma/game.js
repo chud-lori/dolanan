@@ -1,8 +1,7 @@
-// Halma — 2 players on a 9×9 grid with 6 pieces per side.
-// (Simplified for mobile from the classic 16×16, 19-piece variant.)
+// Halma — classical 2-player variant on a 16×16 grid with 19 pieces per side.
 //
 // Rules:
-//   • Each player has 6 pieces in opposite triangular corners.
+//   • Each player has 19 pieces in opposite triangular corner camps.
 //     Red starts in the bottom-left corner, Blue in the top-right.
 //   • On your turn, move ONE piece. Two move types:
 //       - Step: into any of 8 adjacent empty cells.
@@ -11,7 +10,7 @@
 //         with the same piece. Tap "End jump" or click an unrelated cell
 //         to commit the chain.
 //   • No captures — pieces are never removed.
-//   • Win: get all 6 of your pieces into the opponent's starting corner.
+//   • Win: get all 19 of your pieces into the opponent's starting corner.
 
 import { register, t } from "/shared/i18n.js";
 import { wireGameHead } from "/shared/game-head.js";
@@ -52,7 +51,7 @@ wireGameHead({
   rules: {
     en: `
       <h3>Goal</h3>
-      <p>Be the first to move all 6 of your pieces into the opponent's starting corner.</p>
+      <p>Be the first to move all 19 of your pieces into the opponent's starting corner.</p>
       <h3>Movement</h3>
       <ul>
         <li><strong>Step</strong> — move one piece into any of the 8 adjacent empty cells.</li>
@@ -62,7 +61,7 @@ wireGameHead({
       </ul>`,
     id: `
       <h3>Tujuan</h3>
-      <p>Pindahkan keenam bidakmu ke sudut awal lawan duluan.</p>
+      <p>Pindahkan ke-19 bidakmu ke sudut awal lawan duluan.</p>
       <h3>Gerakan</h3>
       <ul>
         <li><strong>Jalan</strong> — pindah satu bidak ke salah satu dari 8 kotak tetangga yang kosong.</li>
@@ -72,7 +71,7 @@ wireGameHead({
       </ul>`,
     jw: `
       <h3>Tujuan</h3>
-      <p>Pindhah enem bidakmu kabeh menyang pojok wiwitan lawan luwih dhisik.</p>
+      <p>Pindhah 19 bidakmu kabeh menyang pojok wiwitan lawan luwih dhisik.</p>
       <h3>Gerakan</h3>
       <ul>
         <li><strong>Mlaku</strong> — pindhah siji bidak menyang salah siji saka 8 kothak jejer sing kosong.</li>
@@ -83,10 +82,23 @@ wireGameHead({
 });
 
 // ---- Constants ----
-const N = 9;
-// Each player's home corner — also their goal (must fill the OPPONENT's home).
-const RED_HOME  = [[8,0],[8,1],[8,2],[7,0],[7,1],[6,0]];
-const BLUE_HOME = [[0,8],[0,7],[0,6],[1,8],[1,7],[2,8]];
+const N = 16;
+// Classical Halma camp: a 19-cell "stepped triangle" in each corner.
+// Red (bottom-left) layout — bottom two rows are 5 cells wide, narrowing up:
+//   row 11: [0,1]
+//   row 12: [0,1,2]
+//   row 13: [0,1,2,3]
+//   row 14: [0,1,2,3,4]
+//   row 15: [0,1,2,3,4]
+const RED_HOME = [
+  [11,0],[11,1],
+  [12,0],[12,1],[12,2],
+  [13,0],[13,1],[13,2],[13,3],
+  [14,0],[14,1],[14,2],[14,3],[14,4],
+  [15,0],[15,1],[15,2],[15,3],[15,4],
+];
+// Blue is the 180° mirror of Red (top-right corner).
+const BLUE_HOME = RED_HOME.map(([r, c]) => [N - 1 - r, N - 1 - c]);
 
 const boardEl = document.getElementById("board");
 const statusEl = document.getElementById("status");
