@@ -498,11 +498,11 @@ function renderStar() {
   boardEl.appendChild(svg);
 
   // Dot layer: one button per valid cell, absolutely positioned.
-  // Inset by 5% on each side so the dots (6.5% wide, centered via
+  // Inset by 7% on each side so the dots (6.5% wide, centered via
   // translate(-50%, -50%)) don't spill past the square board border.
   // SVG background is inset the same amount (see .hl-star-bg CSS).
-  const PAD = 5;
-  const SPAN = 100 - 2 * PAD; // 90
+  const PAD = 7;
+  const SPAN = 100 - 2 * PAD; // 86
   for (const [r, gc] of ST_CELLS) {
     const dot = document.createElement("button");
     dot.type = "button";

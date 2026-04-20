@@ -71,13 +71,13 @@
   overflow: visible;
 }
 
-/* SVG triangle background — inset 5% to match the dot-coordinate margin.
-   Dots use left=5% + (gc/24)*90% so their outer halves don't spill past
+/* SVG triangle background — inset 7% to match the dot-coordinate margin.
+   Dots use left=7% + (gc/24)*86% so their outer halves don't spill past
    the board border; the SVG must shrink by the same amount or the
    triangles won't line up with the dots. */
 .hl-star-bg {
   position: absolute;
-  inset: 5%;
+  inset: 7%;
   pointer-events: none;
 }
 .hl-tri.T  { fill: rgba(239, 68, 68, 0.30); }
