@@ -498,12 +498,17 @@ function renderStar() {
   boardEl.appendChild(svg);
 
   // Dot layer: one button per valid cell, absolutely positioned.
+  // Inset by 5% on each side so the dots (6.5% wide, centered via
+  // translate(-50%, -50%)) don't spill past the square board border.
+  // SVG background is inset the same amount (see .hl-star-bg CSS).
+  const PAD = 5;
+  const SPAN = 100 - 2 * PAD; // 90
   for (const [r, gc] of ST_CELLS) {
     const dot = document.createElement("button");
     dot.type = "button";
     dot.className = "hl-dot";
-    dot.style.left = `${(gc / 24) * 100}%`;
-    dot.style.top  = `${(r / 16) * 100}%`;
+    dot.style.left = `${PAD + (gc / 24) * SPAN}%`;
+    dot.style.top  = `${PAD + (r / 16) * SPAN}%`;
     dot.setAttribute("aria-label", `row ${r + 1} col ${gc}`);
 
     if (selected && selected[0] === r && selected[1] === gc) dot.classList.add("selected");
