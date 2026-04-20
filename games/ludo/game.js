@@ -15,6 +15,60 @@
 //   - Win when all four tokens finish.
 
 import { animateRoll, renderFace } from "/shared/dice.js";
+
+// Inline pawn silhouette. Shared across all 4 colors — CSS per-color rules
+// fill `.p-base / .p-body / .p-neck / .p-head` with the team palette.
+const PAWN_SVG = `<svg class="lu-pawn" viewBox="0 0 24 32" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+  <ellipse class="p-base" cx="12" cy="28" rx="10" ry="2.5"/>
+  <path class="p-body" d="M 5.5 24 C 4 16 9 13 12 13 C 15 13 20 16 18.5 24 Z"/>
+  <ellipse class="p-neck" cx="12" cy="13" rx="5.5" ry="1.2"/>
+  <circle class="p-head" cx="12" cy="7.5" r="5.5"/>
+  <ellipse class="p-shine" cx="10" cy="6" rx="1.8" ry="1.2"/>
+</svg>`;
+
+// Once-only callback wrapper — used to guard the FLIP transitionend handler
+// from firing twice (the fallback setTimeout is a safety net).
+function doOnce(fn) {
+  let called = false;
+  return () => { if (!called) { called = true; fn(); } };
+}
+
+// FLIP slide: compare the just-rendered DOM element's pixel rect with the
+// one captured before the move, then transiently apply an inverse transform
+// and animate it away. Preserves any existing inline transform (e.g. the
+// stack offset applied when multiple tokens share a cell) by composing with it.
+function animateFlip(boardEl, color, idx, oldRect, onDone) {
+  const done = onDone ? doOnce(onDone) : null;
+  // Honor user accessibility preference — skip the slide, hand off immediately.
+  if (window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches) {
+    done?.();
+    return;
+  }
+  if (!oldRect) { done?.(); return; }
+  const newEl = boardEl.querySelector(`.lu-tok.${color}[data-idx="${idx}"]`);
+  if (!newEl) { done?.(); return; }
+  const newRect = newEl.getBoundingClientRect();
+  const dx = oldRect.left - newRect.left;
+  const dy = oldRect.top - newRect.top;
+  if (Math.abs(dx) < 1 && Math.abs(dy) < 1) { done?.(); return; }
+
+  const baseTransform = newEl.style.transform || "";
+  newEl.style.transition = "none";
+  newEl.style.transform = `translate(${dx}px, ${dy}px) ${baseTransform}`.trim();
+  // Force the browser to commit the "snapped-back" state before we start the
+  // transition. Without this read, the two style writes can be coalesced and
+  // the element appears to jump straight to the destination with no slide.
+  void newEl.offsetWidth;
+
+  requestAnimationFrame(() => {
+    newEl.style.transition = "transform 360ms cubic-bezier(0.4, 0, 0.2, 1)";
+    newEl.style.transform = baseTransform;
+    if (done) {
+      newEl.addEventListener("transitionend", done, { once: true });
+      setTimeout(done, 500);
+    }
+  });
+}
 import { register, t } from "/shared/i18n.js";
 import { wireGameHead } from "/shared/game-head.js";
 import { fx } from "/shared/fx.js";
@@ -211,6 +265,10 @@ function newGame(n) {
     roll: null,
     sixesInRow: 0,
     rolledThisTurn: false,
+    // `animating` is true during the FLIP slide so clicks/rolls are locked
+    // out — otherwise a second click during the 360ms slide would trigger a
+    // re-render that wipes the in-flight animation.
+    animating: false,
     done: false,
   };
   renderFace(dieEl, 1);
@@ -338,7 +396,7 @@ function endTurn() {
 }
 
 async function doRoll() {
-  if (state.done || state.rolledThisTurn) return;
+  if (state.done || state.rolledThisTurn || state.animating) return;
   rollBtn.disabled = true;
   state.rolledThisTurn = true;
   const face = 1 + Math.floor(Math.random() * 6);
@@ -368,26 +426,48 @@ async function doRoll() {
 
 function onTokenClick(color, idx) {
   if (state.done) return;
+  if (state.animating) return;
   if (color !== currentColor()) return;
   if (!state.rolledThisTurn) return;
   const movable = movableTokens(color, state.roll);
   if (!movable.includes(idx)) return;
 
+  // FLIP step 1: capture old DOM position before state/DOM mutation.
+  const oldEl = boardEl.querySelector(`.lu-tok.${color}[data-idx="${idx}"]`);
+  const oldRect = oldEl ? oldEl.getBoundingClientRect() : null;
+
+  const rolledSix = state.roll === 6;
   const { captured } = moveToken(color, idx, state.roll);
+
   if (state.done) {
     render();
+    animateFlip(boardEl, color, idx, oldRect);
     return;
   }
-  const rolledSix = state.roll === 6;
+
   const bonus = rolledSix || captured;
   if (bonus) {
     hintEl.textContent = rolledSix ? t("lu.hintSix") : t("lu.hintCapture");
     state.rolledThisTurn = false;
     state.roll = null;
     rollBtn.disabled = false;
+    // Lock further input while the slide plays.
+    state.animating = true;
     render();
+    animateFlip(boardEl, color, idx, oldRect, () => {
+      state.animating = false;
+      render();
+    });
   } else {
-    endTurn();
+    // Render final resting state, slide the pawn, then hand off to endTurn
+    // only after the slide finishes (otherwise endTurn's re-render kills the
+    // animation mid-flight).
+    state.animating = true;
+    render();
+    animateFlip(boardEl, color, idx, oldRect, () => {
+      state.animating = false;
+      endTurn();
+    });
   }
 }
 
@@ -436,6 +516,9 @@ function render() {
         const el = document.createElement("button");
         el.type = "button";
         el.className = "lu-tok " + tok.color + (tok.movable ? " movable" : "");
+        // dataset attrs used by animateFlip() to find the moved token after render
+        el.dataset.color = tok.color;
+        el.dataset.idx = tok.idx;
         if (tokens.length > 1) {
           // stack with small offset
           el.style.transform = `translate(${(i - (tokens.length - 1) / 2) * 16}%, ${(i - (tokens.length - 1) / 2) * 10}%)`;
@@ -446,6 +529,7 @@ function render() {
           el.disabled = true;
         }
         el.setAttribute("aria-label", `${t(COLOR_KEY[tok.color])} token ${tok.idx + 1}`);
+        el.innerHTML = PAWN_SVG;
         cell.appendChild(el);
       });
 
@@ -468,7 +552,7 @@ function render() {
     ? "—"
     : t("lu.turn", { p: t(COLOR_KEY[currentColor()]) });
   turnDot.className = "turn-dot " + COLOR_DOT[currentColor()];
-  rollBtn.disabled = state.done || state.rolledThisTurn;
+  rollBtn.disabled = state.done || state.rolledThisTurn || state.animating;
 }
 
 function cellForPos(color, tokenIdx, pos) {
