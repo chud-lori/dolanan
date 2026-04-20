@@ -48,4 +48,27 @@ export const WORDS = {
       "LAGUNA", "AIRTERJUN", "PULAU", "DATARAN", "RAWA", "TUNDRA", "GOA",
     ],
   },
+  jw: {
+    animals: [
+      "GAJAH", "MACAN", "JERAPAH", "LUMBA", "PANDA", "KANGGURU", "GURITA",
+      "KUPU", "PINGUIN", "BAYA", "LANDHAK", "CITA", "BAJING", "GARUDA",
+      "TERWELU", "HAMSTER", "BULUS", "MERAK", "ZEBRA", "BANTENG",
+    ],
+    food: [
+      "SEGA", "PECEL", "GUDEG", "BAKMI", "RAWON", "SOTO", "TIWUL",
+      "GETHUK", "TEMPE", "TAHU", "KRUPUK", "SATE", "TONGSENG", "BUBUR",
+      "WINGKO", "JADAH", "LEMPER", "ONDE", "GEMBUS", "KARE",
+    ],
+    tech: [
+      "KIBOR", "LAYAR", "LAPTOP", "JARINGAN", "PERAMBAN", "PIRANTI",
+      "BASIDATA", "PENERJEMAH", "TERMINAL", "ALGORITMA", "PROTOKOL",
+      "SANDI", "PAKET", "FUNGSI", "VARIABEL", "MODUL", "PROSESOR",
+      "SINTAKS", "PENYUNTING", "REPOSITORI",
+    ],
+    nature: [
+      "GUNUNG", "ALAS", "KALI", "SEGARA", "GURUN", "LEMBAH", "JURANG",
+      "GUNUNGGENI", "GLETSER", "PADANG", "SABANA", "WANA", "KARANG",
+      "LAGUNA", "GROJOGAN", "PULO", "DATARAN", "RAWA", "TUNDRA", "GUWA",
+    ],
+  },
 };

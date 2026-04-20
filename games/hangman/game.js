@@ -71,7 +71,7 @@ wireGameHead({
         <li>Correct letters fill in; wrong letters add a body part to the gallows.</li>
         <li>Keys turn green for hits, red for misses, and are disabled once tried.</li>
         <li>Cycle categories (Animals, Food, Tech, Nature) with the <em>Change</em> button.</li>
-        <li>Switch language to swap word lists (English ↔ Indonesian).</li>
+        <li>Switch language to swap word lists (English / Indonesian / Javanese).</li>
       </ul>`,
     id: `
       <h3>Tujuan</h3>
