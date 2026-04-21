@@ -140,16 +140,52 @@ The SW uses cache-first with a precached app shell. After every deploy, users
 get the new version **automatically on next visit** — no hard-refresh needed:
 
 1. On load (and when the PWA returns to foreground), `reg.update()` asks the
-   browser to re-check `/sw.js`. Your nginx serves it `no-store` so the check
-   is always fresh.
+   browser to re-check `/sw.js`. Registration uses `updateViaCache: 'none'`
+   and nginx serves it `no-store`, so the check is always fresh (no stale
+   HTTP/CDN cache can mask an update).
 2. If a new SW version exists, it installs in the background and precaches
-   all 88 assets from origin (bypassing any stale CDN cache).
+   every asset from origin.
 3. The page sends `SKIP_WAITING` so the new SW activates immediately.
 4. `controllerchange` fires → page reloads once. User sees a blink, now on
    the new version.
+5. Fallback: if the auto-reload doesn't fire within ~3s (mobile SW lifecycle
+   quirks can defer `controllerchange`), a small "Update available — tap to
+   reload" toast appears. Tapping it forces the switch-over without the user
+   having to clear cache.
 
 If you're offline: `reg.update()` silently fails, cached assets continue to
 serve. The SW never reloads the page without a confirmed new version.
+
+### Publishing a change (IMPORTANT)
+
+**Every time you change any file that the SW precaches**
+(any HTML/CSS/JS/icon under the repo root or `games/`, `shared/`, `icons/`,
+etc.) you must regenerate `sw.js` so its `VERSION` hash bumps. Without a
+bump, browsers keep serving the old cached copies and users see no update.
+
+The precache list is computed from disk, so the workflow is:
+
+```bash
+# from the repo root, after making your changes
+node scripts/build-sw.mjs      # walks the tree, rewrites sw.js + bumps VERSION
+git add -A && git commit -m "…"  # commit sw.js ALONGSIDE your changes
+git push
+```
+
+Then on the server (or let CI do it):
+
+```bash
+cd ~/dolanan && git pull       # picks up the new sw.js
+# or: bash deploy/deploy.sh     # also regenerates sw.js server-side as a safety net
+```
+
+Users get the update on their next visit via the flow described above.
+
+**Forget to run `build-sw.mjs` before committing?** `deploy/deploy.sh`
+regenerates `sw.js` in place on the server — so running it covers you. But
+if your deploy is just `git pull` (no deploy.sh), the committed `sw.js` is
+what ships. Make `node scripts/build-sw.mjs` part of your muscle memory
+before every push.
 
 ## Deploying
 
@@ -191,14 +227,21 @@ The installer will:
 4. Symlink `~/dolanan` → `/var/www/dolanan`.
 5. `nginx -t && systemctl reload nginx`.
 
-**Subsequent updates** — dead simple:
+**Subsequent updates** — on the server:
 
 ```bash
 cd ~/dolanan && git pull
+bash deploy/deploy.sh          # regenerates sw.js + reloads nginx
 ```
 
-The symlink means nginx already sees the new files. The SW auto-update (see
-section above) delivers them to users on their next visit.
+The symlink means nginx already sees the new files. `deploy.sh` bumps the
+SW `VERSION` so browsers pick up the change (see
+[Publishing a change](#publishing-a-change-important)), then the SW
+auto-update flow delivers it to users on their next visit.
+
+If `node` isn't installed on the server, `deploy.sh` leaves `sw.js` as
+committed — in that case make sure you ran `node scripts/build-sw.mjs`
+locally before pushing.
 
 **Cloudflare:** add an A record for `dolanan.lori.my.id` pointing to the VM
 (proxied). For HTTPS: `sudo certbot --nginx -d dolanan.lori.my.id`.
